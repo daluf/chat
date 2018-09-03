@@ -8,26 +8,43 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="/style.css">
+
     <title>Hello, world!</title>
   </head>
   <body>
 
 	<!-- <center> -->
-    <div class="container" style="margin: auto;">
-      <div class="row" style="width: 800px; height: 250px; margin-top: 20px; font-size: 30px; text-align: center;">
+    <!-- <div class="container" style="margin: auto ;">
+      <div class="row" style="">
         <div id="login" class="card">
-        <div class="card-body">
+          <div class="card-body">
+            Login into Chat
+          </div>
+          <div class="input-group mb-3">
+            <input id="text" style="height: 80px; font-size: 24px; text-align: center;" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+          </div>
+          <button style="margin-top: 15px;" type="button" class="btn btn-primary">Login</button>
+        </div>
+      </div>
+    </div> -->
+	<!-- </center> -->
+
+    <div class="login-wrapper">
+      <div class="login-card">
+        <div class="login-title">
           Login into Chat
         </div>
-        <div class="input-group mb-3">
+        
+        <div>
           <input id="text" style="height: 80px; font-size: 24px; text-align: center;" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
         </div>
-        <button style="margin-top: 15px;" type="button" class="btn btn-primary">Login</button>
-      </div>
-
+        
+        <div>
+          <button style="margin-top: 15px;" type="button" class="btn btn-primary login-button">Login</button>
+        </div>
       </div>
     </div>
-	<!-- </center> -->
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

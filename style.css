@@ -1,0 +1,39 @@
+.login-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    display: flex;
+    flex-direction: column;
+
+    height: 80%;
+    max-height: 400px;
+
+    width: 80%;
+    max-width: 800px;
+
+    border: 1px solid black;
+
+    justify-content: center;
+    align-items: stretch;
+
+    text-align: center;
+    font-size: 30px;
+}
+
+.login-title {
+    margin-bottom: 20px;
+}
+
+.login-button {
+    width: 150px;
+    height: 40px;
+}

@@ -9,6 +9,10 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/style.css', function(req, res){
+  res.sendFile(__dirname + '/style.css');
+});
+
 io.on('connection', function(socket){
   console.log('a user connected');
 
