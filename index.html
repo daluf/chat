@@ -14,23 +14,7 @@
   </head>
   <body>
 
-	<!-- <center> -->
-    <!-- <div class="container" style="margin: auto ;">
-      <div class="row" style="">
-        <div id="login" class="card">
-          <div class="card-body">
-            Login into Chat
-          </div>
-          <div class="input-group mb-3">
-            <input id="text" style="height: 80px; font-size: 24px; text-align: center;" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-          </div>
-          <button style="margin-top: 15px;" type="button" class="btn btn-primary">Login</button>
-        </div>
-      </div>
-    </div> -->
-	<!-- </center> -->
-
-    <div class="login-wrapper">
+    <!-- <div class="login-wrapper">
       <div class="login-card">
         <div class="login-title">
           Login into Chat
@@ -44,6 +28,35 @@
           <button onclick="login();" type="button" class="btn btn-primary login-button">Login</button>
         </div>
       </div>
+    </div> -->
+
+    <div class="container chat-ui">
+
+      <div class="row">
+        
+        <div class="col-10">
+          <div class="chat-text">
+
+          </div>
+        </div>
+        <div class="col-2">
+          <div class="chat-users">
+
+          </div>
+        </div>
+
+        <div class="col-12 chat-input">
+          
+          <div class="input-group mb-3">
+            <input id="message-input" type="text" class="form-control" placeholder="Message" aria-label="Message" aria-describedby="button-addon2">
+            <div class="input-group-append">
+              <button onclick="sendTextMessage();" class="btn btn-outline-secondary" type="button" id="button-addon2">Button</button>
+            </div>
+  
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Optional JavaScript -->
@@ -59,7 +72,7 @@
 
       // -> WIP <-
       function sendTextMessage() {
-        socket.emit('message', $("#messageField").val());
+        socket.emit('message', $("#message-input").val());
       }
 
       socket.on('showChat', function() {
@@ -71,7 +84,7 @@
       });
 
       socket.on('newMessage', function(username, text) {
-
+        console.log("Test");
       });
 
     </script>
