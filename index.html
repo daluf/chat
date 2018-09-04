@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <div class="container chat-ui">
+    <div class="container chat-ui mx-auto">
 
       <div class="row">
         <div class="col-10 chat-messages" id="chat-messages">
@@ -67,8 +67,9 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      const socket = io();
+    const socket = io();
 
+      // Escape function for HTML code
       function escapeHtml(replaceText) {
         return replaceText
           .replace(/&/g, "&amp;")
@@ -78,20 +79,23 @@
           .replace(/’/g, "&#039;");
       } 
 
+      // Automatically scroll to new Message
       function scrollDown() {
         document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight
       }
 
+      // Hiding Chat-UI if user isnt logged in
       $( document ).ready(function() {
         $(".chat-ui").hide();
         socket.emit('getOnlineUsers');
       });
 
+      // Submit Login
       function login() {
         socket.emit('login', $("#usernameText").val()); // Take Value in Input Field "usernameText" and send to Server
       };
 
-      // -> WIP <-
+      // Send text-message to Server
       function sendTextMessage() {
         if ($("#message-input").val()) {
           socket.emit('message', $("#message-input").val());
@@ -99,6 +103,7 @@
         }
       }
 
+      // Send text-message on Enter-button
       $("#message-input").keypress(function(e) {
         if(e.which == 13) {
           if ($("#message-input").val()) {
@@ -108,31 +113,37 @@
         }
       });
 
+      // Hide login-wrapper after the User is logged in
       socket.on('showChat', function() {
         $(".login-wrapper").hide();
         $(".chat-ui").show();
       });
 
+      // Get online Users
       socket.on('getOnlineUsers', function(onlineList) {
         for (i = 0; i < onlineList.length; i++) {
           $( ".chat-users" ).append( "<div id="+onlineList[i]+"> "+escapeHtml(onlineList[i])+" </div>" );
         }
       });
 
+      // New-joined user will appear
       socket.on('userConnected', function(username) {
         $( ".chat-users" ).append( "<div id="+escapeHtml(username)+"> "+escapeHtml(username)+" </div>" );
       });
 
+      // Remove User on Disconnect
       socket.on('clientDisconnect', function(username) {
         console.log('disconnected: ' + username)
         $( "#"+username+"" ).remove();
       });
 
+      // Receive and show new Message
       socket.on('newMessage', function(username, text) {
         $( ".chat-text" ).append( "<div id='message'> <b> "+escapeHtml(username)+"</b>:<br><p>"+escapeHtml(text)+"</p></div>" );
         scrollDown();
       });
 
+      // Alert on too long Username
       socket.on('alertError', function(error) {
         swal(
           'Error!',
