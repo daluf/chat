@@ -79,3 +79,12 @@ html {
 #message {
     word-wrap: break-word;
 }
+
+.removalButton {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+    border-radius: 30px;
+    margin-left: 95%;
+    margin-top: -12.5%;
+}

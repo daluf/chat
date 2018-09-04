@@ -138,8 +138,12 @@
       });
 
       // Receive and show new Message
-      socket.on('newMessage', function(username, text) {
-        $( ".chat-text" ).append( "<div id='message'> <b> "+escapeHtml(username)+"</b>:<br><p>"+escapeHtml(text)+"</p></div>" );
+      socket.on('newMessage', function(username, text, id, owner) {
+        if (owner) {
+          $( ".chat-text" ).append( "<div id='"+id+"'> <b> "+escapeHtml(username)+"</b>:<br><p>"+escapeHtml(text)+"</p> <button type='button' onclick='removeMessage("+id+");' class='btn btn-danger removalButton'>X</button></div>" );
+        } else {
+          $( ".chat-text" ).append( "<div id='"+id+"'> <b> "+escapeHtml(username)+"</b>:<br><p>"+escapeHtml(text)+"</p></div>" );
+        }
         scrollDown();
       });
 
@@ -151,6 +155,14 @@
           'error'
         )
       });
+
+      function removeMessage(id) {
+        socket.emit('removeMessage', id);
+      }
+
+      socket.on('removeMessage', function(id) {
+        $( "#"+id ).remove();
+      })
 
     </script>
   </body>
