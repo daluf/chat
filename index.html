@@ -104,6 +104,15 @@
       }
 
       // Send text-message on Enter-button
+      $("#usernameText").keypress(function(e) {
+        if(e.which == 13) {
+          if ($("#usernameText").val()) {
+            socket.emit('login', $("#usernameText").val());
+            $("#usernameText").val('');
+          }
+        }
+      });
+
       $("#message-input").keypress(function(e) {
         if(e.which == 13) {
           if ($("#message-input").val()) {
