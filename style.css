@@ -93,19 +93,19 @@ html {
     padding-top: 10%;
 }
 
-.green {
+.online {
     padding-left: 5px;
     color: white;
     background-color: green;
 }
 
-.yellow {
+.away {
     padding-left: 5px;
     color: black;
     background-color: yellow;
 }
 
-.red {
+.busy {
     padding-left: 5px;
     color: white;
     background-color: red;

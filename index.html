@@ -97,6 +97,7 @@
           .replace(/’/g, "&#039;");
       } 
 
+      // Change your Status
       function changeStatus(status) {
         socket.emit('changeStatus', status)
         $("#statusOnline").removeClass('active')
@@ -113,19 +114,13 @@
         }
       }
 
+      // Change Status of specified user
       socket.on('changeStatus', function(id, status) {
-        $("#"+id).removeClass('green')
-        $("#"+id).removeClass('yellow')
-        $("#"+id).removeClass('red')
-        if (status == 'online') {
-          $("#"+id).addClass('green')
-        }
-        if (status == 'away') {
-          $("#"+id).addClass('yellow')
-        }
-        if (status == 'busy') {
-          $("#"+id).addClass('red')
-        }
+        $("#"+id).removeClass('online')
+        $("#"+id).removeClass('away')
+        $("#"+id).removeClass('busy')
+
+        $("#"+id).addClass(status)
       })
 
       // Automatically scroll to new Message
@@ -188,7 +183,7 @@
       // New-joined user will appear
       socket.on('userConnected', function(username) {
         $( ".chat-users" ).append( "<div id="+escapeHtml(username)+"> "+escapeHtml(username)+" </div>" )
-        $("#"+username).addClass('green')
+        $("#"+username).addClass('online')
       });
 
       // Remove User on Disconnect
@@ -216,10 +211,12 @@
         )
       });
 
+      // Send to server that you'd like to remove your message
       function removeMessage(id) {
         socket.emit('removeMessage', id);
       }
 
+      // Remove requested Message
       socket.on('removeMessage', function(id) {
         $( "#"+id ).remove();
       })

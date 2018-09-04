@@ -55,22 +55,23 @@ io.on('connection', function(socket){
     
     if (userlist.find(id => id.id === socket.id)) {
       io.emit('clientDisconnect', userlist.find(id => id.id === socket.id).user); // Emit to all Clients that a User left
+      let userIndex = userlist.indexOf(userlist.find(id => id.id === socket.id)) // Find element's index in array
+      userlist.splice(userIndex, 1); // Remove the Item
     }
-
-    let userIndex = userlist.indexOf(userlist.find(id => id.id === socket.id)) // Find element's index in array
-    userlist.splice(userIndex, 1); // Remove the Item
     
     console.log(userlist)
   });
 
   // Message Handler (Receive Message -> Send them to all Clients)
   socket.on('message', function(msg) {
-    msgCounter++;
-    socket.emit('newMessage', userlist.find(id => id.id === socket.id).user, msg, msgCounter, true)
-    socket.broadcast.emit('newMessage', userlist.find(id => id.id === socket.id).user, msg, msgCounter); // Send the new incoming Message to all Clients
-    let userIndex = userlist.indexOf(userlist.find(id => id.id === socket.id))
-    userlist[userIndex].msgIds.push(msgCounter);
-    console.log(userlist);
+    if (userlist.find(id => id.id === socket.id)) {
+      msgCounter++;
+      socket.emit('newMessage', userlist.find(id => id.id === socket.id).user, msg, msgCounter, true)
+      socket.broadcast.emit('newMessage', userlist.find(id => id.id === socket.id).user, msg, msgCounter); // Send the new incoming Message to all Clients
+      let userIndex = userlist.indexOf(userlist.find(id => id.id === socket.id))
+      userlist[userIndex].msgIds.push(msgCounter);
+      console.log(userlist);
+    }
   })
 
   // Process Currently Online Users
@@ -84,18 +85,22 @@ io.on('connection', function(socket){
     socket.emit('getOnlineUsers', onlineList, statusList)
   })
 
+  // Function to remove a Message globally
   socket.on('removeMessage', function(id) {
     let userIndex = userlist.indexOf(userlist.find(id => id.id === socket.id))
-    if (userlist[userIndex].msgIds.indexOf('id')) {
+    if (userlist[userIndex].msgIds.includes(id)) {
       io.emit('removeMessage', id)
     }
   })
 
+  // Change User Status, save it and announce it
   socket.on('changeStatus', function(status) {
-    io.emit('changeStatus', userlist.find(id => id.id === socket.id).user, status)
-    let userIndex = userlist.indexOf(userlist.find(id => id.id === socket.id))
-    userlist[userIndex].status = status;
-    console.log(userlist);
+    if (userlist.find(id => id.id === socket.id)) {
+      io.emit('changeStatus', userlist.find(id => id.id === socket.id).user, status)
+      let userIndex = userlist.indexOf(userlist.find(id => id.id === socket.id))
+      userlist[userIndex].status = status;
+      console.log(userlist);
+    }
   })
 
 });
