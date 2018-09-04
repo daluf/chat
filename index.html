@@ -37,23 +37,43 @@
         </div>
         
         <div>
-          <input id="text" style="height: 80px; font-size: 24px; text-align: center;" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+          <input id="usernameText" class="username-field" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
         </div>
         
         <div>
-          <button style="margin-top: 15px;" type="button" class="btn btn-primary login-button">Login</button>
+          <button onclick="login();" type="button" class="btn btn-primary login-button">Login</button>
         </div>
       </div>
     </div>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-	<script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script>
       var socket = io();
+
+      function login() {
+        socket.emit('login', $("#usernameText").val()); // Take Value in Input Field "usernameText" and send to Server
+      };
+
+      // -> WIP <-
+      function sendTextMessage() {
+        socket.emit('message', $("#messageField").val());
+      }
+
+      socket.on('showChat', function() {
+        $(".login-wrapper").hide();
+      });
+
+      socket.on('clientDisconnect', function(username) {
+        
+      });
+
+      socket.on('newMessage', function(username, text) {
+
+      });
+
     </script>
   </body>
 </html>

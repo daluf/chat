@@ -36,4 +36,11 @@
 .login-button {
     width: 150px;
     height: 40px;
+    margin-top: 15px;
+}
+
+.username-field {
+    height: 80px;
+    font-size: 24px;
+    text-align: center;
 }
