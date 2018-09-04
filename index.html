@@ -140,7 +140,7 @@
       // Receive and show new Message
       socket.on('newMessage', function(username, text, id, owner) {
         if (owner) {
-          $( ".chat-text" ).append( "<div id='"+id+"'> <b> "+escapeHtml(username)+"</b>:<br><p>"+escapeHtml(text)+"</p> <button type='button' onclick='removeMessage("+id+");' class='btn btn-danger removalButton'>X</button></div>" );
+          $( ".chat-text" ).append( "<div class='row' id='"+id+"'> <div class='col-11'> <b> "+escapeHtml(username)+"</b>:<br><p>"+escapeHtml(text)+"</p> </div> <div class='col-1'> <button type='button' onclick='removeMessage("+id+");' class='btn btn-danger removalButton'>X</button></div>" );
         } else {
           $( ".chat-text" ).append( "<div id='"+id+"'> <b> "+escapeHtml(username)+"</b>:<br><p>"+escapeHtml(text)+"</p></div>" );
         }
