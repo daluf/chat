@@ -24,18 +24,23 @@ io.on('connection', function(socket){
         onlineList.push(userlist[key].user)
       }
       if (!onlineList.includes(username)) {
-        console.log(username);
-        
-        userlist.push({
-            "id": socket.id,
-            "user": username,
-            "msgIds": []
-        }) // Username + ID -> Array
-        
-        console.log(userlist) // Print Array for testing purposes
-        
-        socket.emit('showChat'); // Hide Login Window and show Chat
-        io.emit('userConnected', username); // Send to all Clients -> New User connected
+        if (!userlist.find(id => id.id === socket.id)) {
+          console.log(username);
+          
+          userlist.push({
+              "id": socket.id,
+              "user": username,
+              "status": 'online',
+              "msgIds": []
+          }) // Username + ID -> Array
+          
+          console.log(userlist) // Print Array for testing purposes
+          
+          socket.emit('showChat'); // Hide Login Window and show Chat
+          io.emit('userConnected', username); // Send to all Clients -> New User connected
+        } else {
+          socket.emit('alertError', 'Nice Try')
+        }
       } else {
         socket.emit('alertError', 'Username is taken!'); // SweetError if the Username extends 12 Chars
       }
@@ -71,10 +76,12 @@ io.on('connection', function(socket){
   // Process Currently Online Users
   socket.on('getOnlineUsers', function() { // User requests all Online Users so they can be displayed
     let onlineList = [];
+    let statusList = [];
     for (let key in userlist) {
       onlineList.push(userlist[key].user)
+      statusList.push(userlist[key].status)
     }
-    socket.emit('getOnlineUsers', onlineList)
+    socket.emit('getOnlineUsers', onlineList, statusList)
   })
 
   socket.on('removeMessage', function(id) {
@@ -82,6 +89,13 @@ io.on('connection', function(socket){
     if (userlist[userIndex].msgIds.indexOf('id')) {
       io.emit('removeMessage', id)
     }
+  })
+
+  socket.on('changeStatus', function(status) {
+    io.emit('changeStatus', userlist.find(id => id.id === socket.id).user, status)
+    let userIndex = userlist.indexOf(userlist.find(id => id.id === socket.id))
+    userlist[userIndex].status = status;
+    console.log(userlist);
   })
 
 });

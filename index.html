@@ -47,16 +47,31 @@
       </div>
 
       <div class="row">
-      <div class="col-12 chat-input">
+
+        <div class="col-10 chat-input">
                     
-        <div class="input-group mb-3">
-          <input id="message-input" type="text" class="form-control" placeholder="Message" aria-label="Message" aria-describedby="button-addon2">
-          <div class="input-group-append">
-            <button onclick="sendTextMessage();" class="btn btn-outline-secondary" type="button" id="button-addon2">Send Message</button>
+          <div class="input-group mb-3">
+            <input id="message-input" type="text" class="form-control" placeholder="Message" aria-label="Message" aria-describedby="button-addon2">
+            <div class="input-group-append">
+              <button onclick="sendTextMessage();" class="btn btn-outline-secondary" type="button" id="button-addon2">Send Message</button>
+            </div>
           </div>
-        </div>
 
         </div>
+
+        <div class="col-2 chat-input">
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Status
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a id="statusOnline" class="dropdown-item active" onclick="changeStatus('online')" href="#">Online</a>
+                <a id="statusAway" class="dropdown-item" onclick="changeStatus('away')" href="#">Away</a>
+                <a id="statusBusy" class="dropdown-item" onclick="changeStatus('busy')" href="#">Busy</a>
+              </div>
+            </div>
+        </div>
+
       </div>
 
     </div>
@@ -65,6 +80,8 @@
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.13/dist/sweetalert2.all.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
     const socket = io();
@@ -76,8 +93,40 @@
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;")
           .replace(/“/g, "&quot;")
+          .replace(/#/g, "&num;")
           .replace(/’/g, "&#039;");
       } 
+
+      function changeStatus(status) {
+        socket.emit('changeStatus', status)
+        $("#statusOnline").removeClass('active')
+        $("#statusAway").removeClass('active')
+        $("#statusBusy").removeClass('active')
+        if (status == 'online') {
+          $("#statusOnline").addClass('active')
+        }
+        if (status == 'away') {
+          $("#statusAway").addClass('active')
+        }
+        if (status == 'busy') {
+          $("#statusBusy").addClass('active')
+        }
+      }
+
+      socket.on('changeStatus', function(id, status) {
+        $("#"+id).removeClass('green')
+        $("#"+id).removeClass('yellow')
+        $("#"+id).removeClass('red')
+        if (status == 'online') {
+          $("#"+id).addClass('green')
+        }
+        if (status == 'away') {
+          $("#"+id).addClass('yellow')
+        }
+        if (status == 'busy') {
+          $("#"+id).addClass('red')
+        }
+      })
 
       // Automatically scroll to new Message
       function scrollDown() {
@@ -129,15 +178,17 @@
       });
 
       // Get online Users
-      socket.on('getOnlineUsers', function(onlineList) {
+      socket.on('getOnlineUsers', function(onlineList, statusList) {
         for (i = 0; i < onlineList.length; i++) {
           $( ".chat-users" ).append( "<div id="+onlineList[i]+"> "+escapeHtml(onlineList[i])+" </div>" );
+          $("#"+onlineList[i]).addClass(statusList[i]);
         }
       });
 
       // New-joined user will appear
       socket.on('userConnected', function(username) {
-        $( ".chat-users" ).append( "<div id="+escapeHtml(username)+"> "+escapeHtml(username)+" </div>" );
+        $( ".chat-users" ).append( "<div id="+escapeHtml(username)+"> "+escapeHtml(username)+" </div>" )
+        $("#"+username).addClass('green')
       });
 
       // Remove User on Disconnect
@@ -149,7 +200,7 @@
       // Receive and show new Message
       socket.on('newMessage', function(username, text, id, owner) {
         if (owner) {
-          $( ".chat-text" ).append( "<div class='row' id='"+id+"'> <div class='col-11'> <b> "+escapeHtml(username)+"</b>:<br><p>"+escapeHtml(text)+"</p> </div> <div class='col-1'> <button type='button' onclick='removeMessage("+id+");' class='btn btn-danger removalButton'>X</button></div>" );
+          $( ".chat-text" ).append( "<div class='row' id='"+id+"'> <div class='col-10'> <b> "+escapeHtml(username)+"</b>:<br><p class='message'>"+escapeHtml(text)+"</p> </div> <div class='col-1'> <button type='button' onclick='removeMessage("+id+");' class='btn btn-danger removalButton'>X</button></div>" );
         } else {
           $( ".chat-text" ).append( "<div id='"+id+"'> <b> "+escapeHtml(username)+"</b>:<br><p>"+escapeHtml(text)+"</p></div>" );
         }

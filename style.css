@@ -79,7 +79,12 @@ html {
 }
 
 #message {
-    word-wrap: break-word;
+    display: block;
+    -ms-word-break: break-all; 
+    word-break: break-all; 
+    word-break: break-word;
+    width: 400px;
+    max-width: 60%;
 }
 
 .removalButton {
@@ -89,4 +94,53 @@ html {
     margin-top: 20%;
     padding-left: 21%;
     padding-top: 10%;
+}
+
+.green {
+    padding-left: 5px;
+    color: white;
+    background-color: green;
+}
+
+.yellow {
+    padding-left: 5px;
+    color: black;
+    background-color: yellow;
+}
+
+.red {
+    padding-left: 5px;
+    color: white;
+    background-color: red;
+}
+
+@media only screen and (max-width: 600px) {
+    .removalButton {
+        width: 24px;
+        height: 24px;
+        border-radius: 30px;
+        margin-top: 20%;
+        padding-left: 5px;
+        padding-top: 10%;
+    }
+    .chat-messages {
+        margin-top: 15px;
+        height: 400px;
+        width: 250px;
+        max-width: 60%;
+        max-height: 80%;
+        scroll-behavior: auto;
+        overflow: scroll;
+    }
+    .col-2 {
+        -ms-flex: 0 0 40%;
+        flex: 0 0 40%;
+        max-width: 40%;
+    }
+    .chat-input {
+        border-top: 1px solid black;
+        width: 100%;
+        max-width: 100%;
+        padding-top: 15px;
+    }
 }
