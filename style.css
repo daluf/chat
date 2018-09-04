@@ -74,17 +74,14 @@ html {
 }
 
 .chat-input {
-    border-top: 1px solid black;
+    
     padding-top: 15px;
 }
 
-#message {
+.message {
     display: block;
     -ms-word-break: break-all; 
     word-break: break-all; 
-    word-break: break-word;
-    width: 400px;
-    max-width: 60%;
 }
 
 .removalButton {
@@ -112,6 +109,9 @@ html {
     padding-left: 5px;
     color: white;
     background-color: red;
+}
+.chat-border {
+    border-top: 1px solid black;
 }
 
 @media only screen and (max-width: 600px) {
@@ -142,5 +142,13 @@ html {
         width: 100%;
         max-width: 100%;
         padding-top: 15px;
+    }
+    .username-field {
+        height: 30px;
+        width: 200px;
+        font-size: 16px;
+        text-align: center;
+        border: 1px solid black;
+        border-radius: 15px;
     }
 }
