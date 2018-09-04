@@ -15,6 +15,7 @@ app.get('/style.css', function(req, res){
 
 io.on('connection', function(socket){
 
+  // Login Handler (Add new User and announce it)
   socket.on('login', function(username){
     if (username.length <= 12) {
       console.log(username);
@@ -33,6 +34,7 @@ io.on('connection', function(socket){
     }
   });
 
+  // Disconnect Handler (Detect Disconnect and announce it)
   socket.on('disconnect', function(){
     console.log(socket.id + ' disconnected');
     
@@ -46,13 +48,15 @@ io.on('connection', function(socket){
     console.log(userlist)
   });
 
+  // Message Handler (Receive Message -> Send them to all Clients)
   socket.on('message', function(msg) {
     io.emit('newMessage', userlist.find(id => id.id === socket.id).user, msg); // Send the new incoming Message to all Clients
   })
 
+  // Process Currently Online Users
   socket.on('getOnlineUsers', function() { // User requests all Online Users so they can be displayed
     let onlineList = [];
-    for (var key in userlist) {
+    for (let key in userlist) {
       onlineList.push(userlist[key].user)
     }
     socket.emit('getOnlineUsers', onlineList)

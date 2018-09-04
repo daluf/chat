@@ -2,6 +2,7 @@ body,
 html {
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
 .login-wrapper {
@@ -50,6 +51,9 @@ html {
     width: 400px;
     font-size: 24px;
     text-align: center;
+}
+
+.chat-ui {
 }
 
 .chat-messages {

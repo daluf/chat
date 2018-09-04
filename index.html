@@ -10,7 +10,7 @@
 
     <link rel="stylesheet" href="/style.css">
 
-    <title>Hello, world!</title>
+    <title>Hello, chat!</title>
   </head>
   <body>
 
@@ -32,8 +32,9 @@
 
     <div class="container chat-ui">
 
+    <div class="d-flex justify-content-center">
       <div class="row">
-        
+        </div>
         <div class="col-10 chat-messages" id="chat-messages">
           <div class="chat-text">
 
@@ -51,15 +52,17 @@
 
         <div class="col-12 chat-input">
           
+          
           <div class="input-group mb-3">
             <input id="message-input" type="text" class="form-control" placeholder="Message" aria-label="Message" aria-describedby="button-addon2">
             <div class="input-group-append">
               <button onclick="sendTextMessage();" class="btn btn-outline-secondary" type="button" id="button-addon2">Send Message</button>
             </div>
-  
           </div>
+
         </div>
       </div>
+    </div>
 
     </div>
 
@@ -69,7 +72,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      var socket = io();
+      const socket = io();
 
       function escapeHtml(replaceText) {
         return replaceText
