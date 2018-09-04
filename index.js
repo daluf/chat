@@ -32,6 +32,11 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', function(){
     console.log(socket.id + ' disconnected');
+    
+    let userIndex = userlist.indexOf(userlist.find(id => id.id === socket.id)) // Find element's index in array
+    userlist.splice(userIndex); // Remove the Item
+    
+    console.log(userlist)
     // socket.broadcast.emit('clientDisconnect', ); <- WIP
   });
 
