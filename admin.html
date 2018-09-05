@@ -74,17 +74,7 @@
 				</div>
 			</div>
 			<div class="col-12">
-				<div class="list-group">
-					<button type="button" class="list-group-item list-group-item-action">Cras justo odio</button>
-					<button type="button" class="list-group-item list-group-item-action">Dapibus ac facilisis in</button>
-					<button type="button" class="list-group-item list-group-item-action">Morbi leo risus</button>
-					<button type="button" class="list-group-item list-group-item-action">Porta ac consectetur ac</button>
-					<button type="button" class="list-group-item list-group-item-action">Vestibulum at eros</button>
-					<button type="button" class="list-group-item list-group-item-action">Cras justo odio</button>
-					<button type="button" class="list-group-item list-group-item-action">Dapibus ac facilisis in</button>
-					<button type="button" class="list-group-item list-group-item-action">Morbi leo risus</button>
-					<button type="button" class="list-group-item list-group-item-action">Porta ac consectetur ac</button>
-					<button type="button" class="list-group-item list-group-item-action">Vestibulum at eros</button>
+				<div id="whitelistedUsers" class="list-group">
 				</div>
 			</div>
 		</div>
@@ -120,7 +110,10 @@
 	}
 
 	function whitelistUser() {
-		socket.emit("whitelistUser", $("#whitelistInput").val())
+		socket.emit("whitelistUser", $("#whitelistInput").val(), (user, id) => {
+			console.log(user, id);
+			$.tmpl('<button id="Whitelist'+id+'" type="button" onclick="removeFromWhitelist('+id+')" class="list-group-item list-group-item-action">${user}</button>', {user: user}).prependTo( "#whitelistedUsers" );
+		})
 	}
 
 	function login() {
@@ -151,6 +144,12 @@
 		socket.emit('removeRoom', room)
 	}
 
+	function removeFromWhitelist(id) {
+		socket.emit('removeFromWhitelist', id, (data) => {
+			$('#Whitelist'+data).remove();
+		});
+	}
+
 	socket.on('roomCreate', function(name, state) {
 		if (state == 'public') {
 			$.tmpl( "<div id="+name+"RoomDiv"+" class='col-3 room'><i id="+name+" style='color: rgb(0, 160, 0);' class='fas fa-lock-open'></i> "+name+" <div class='dropdown text-right'><button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'><a onclick='setPublic2("+name+")' class='dropdown-item'>Public</a><a onclick='setPrivate2("+name+")' class='dropdown-item'>Private</a><a onclick='removeRoom2( "+name+" )' class='dropdown-item btn-danger'>Delete</a></div></div></div>").appendTo( "#roomies" );
@@ -179,6 +178,11 @@
 		$(".login-wrapper").hide();
 		$(".admin-ui").show();
 		socket.emit('requestChatRooms')
+		socket.emit('requestWhitelist', (whitelist) => {
+			for (i = 0; i < whitelist.length; i++) {
+				$.tmpl('<button id="Whitelist'+i+'" type="button" onclick="removeFromWhitelist('+i+')" class="list-group-item list-group-item-action">${user}</button>', {user: whitelist[i]}).prependTo( "#whitelistedUsers" );
+			}
+		})
 	})
 
 	socket.on('responseChatRooms', function(rooms) {
@@ -198,7 +202,11 @@
 	$("#whitelistInput").keypress(function(e) {
 		if(e.which == 13) {
 			if ($("#whitelistInput").val()) {
-				socket.emit("whitelistUser", $("#whitelistInput").val())
+				socket.emit("whitelistUser", $("#whitelistInput").val(), (user, id) => {
+					id = id-1
+					console.log(user, id);
+					$.tmpl('<button id="Whitelist'+id+'" type="button" onclick="removeFromWhitelist('+id+')" class="list-group-item list-group-item-action">${user}</button>', {user: user}).prependTo( "#whitelistedUsers" );
+				})
 				$("#whitelistInput").val('');
 			}
 		}

@@ -95,15 +95,38 @@ io.on('connection', function(socket){
     }
   })
 
-  socket.on('whitelistUser', function(user) {
+  socket.on('requestWhitelist', function(fn) {
+	if (adminlist.find(id => id.id === socket.id)) {
+		fs.readFile('whitelist.json', (err, data) => {
+		  data = JSON.parse(data);
+		  fn(data)
+		})
+	  }
+  })
+
+  socket.on('removeFromWhitelist', function(user, fn) {
+	if (adminlist.find(id => id.id === socket.id)) {
+		fs.readFile('whitelist.json', (err, data) => {
+			data = JSON.parse(data);
+			data.splice(user, 1);
+			data = JSON.stringify(data);
+			fs.writeFile('whitelist.json', data, (err) => { if (err) console.log(err) });
+			fn(user);
+		})
+	}
+  })
+
+  socket.on('whitelistUser', function(user, fn) {
     if (adminlist.find(id => id.id === socket.id)) {
       fs.readFile('whitelist.json', (err, data) => {
+		let test = 0;
         data = JSON.parse(data);
         data.push(user);
-        console.log(data)
+		console.log(data)
+		test = data.length
         data = JSON.stringify(data);
         fs.writeFile('whitelist.json', data, (err) => { if (err) console.log(err) });
-        socket.emit('userWhitelisted', user)
+        fn(user, test)
       })
     }
   })
@@ -118,16 +141,16 @@ io.on('connection', function(socket){
       if (!onlineList.includes(username)) {
         if (!userlist.find(id => id.id === socket.id)) {
           console.log(username);
-          
+
           userlist.push({
               "id": socket.id,
               "user": username,
               "status": 'online',
               "msgIds": []
           }) // Username + ID -> Array
-          
+
           console.log(userlist) // Print Array for testing purposes
-          
+
           socket.emit('showChat'); // Hide Login Window and show Chat
           io.emit('userConnected', username); // Send to all Clients -> New User connected
         } else {
@@ -144,13 +167,13 @@ io.on('connection', function(socket){
   // Disconnect Handler (Detect Disconnect and announce it)
   socket.on('disconnect', function(){
     console.log(socket.id + ' disconnected');
-    
+
     if (userlist.find(id => id.id === socket.id)) {
       io.emit('clientDisconnect', userlist.find(id => id.id === socket.id).user); // Emit to all Clients that a User left
       let userIndex = userlist.indexOf(userlist.find(id => id.id === socket.id)) // Find element's index in array
       userlist.splice(userIndex, 1); // Remove the Item
     }
-    
+
     console.log(userlist)
   });
 
