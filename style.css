@@ -74,7 +74,6 @@ html {
 }
 
 .chat-input {
-    
     padding-top: 15px;
 }
 
@@ -94,21 +93,30 @@ html {
 }
 
 .online {
-    padding-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-left: 20px;
     color: white;
-    background-color: green;
+    background-color: rgb(0, 160, 0);
+    border-radius: 20px;
 }
 
 .away {
-    padding-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-left: 20px;
     color: black;
-    background-color: yellow;
+    background-color: rgb(255, 217, 0);
+    border-radius: 20px;
 }
 
 .busy {
-    padding-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-left: 20px;
     color: white;
-    background-color: red;
+    background-color: rgb(177, 0, 0);
+    border-radius: 20px;
 }
 .chat-border {
     border-top: 1px solid black;
@@ -140,7 +148,7 @@ html {
     .chat-input {
         border-top: 1px solid black;
         width: 100%;
-        max-width: 100%;
+        max-width: 60%;
         padding-top: 15px;
     }
     .username-field {
@@ -150,5 +158,28 @@ html {
         text-align: center;
         border: 1px solid black;
         border-radius: 15px;
+    }
+    .chat-ui {
+        margin-top: 10%;
+    }
+}
+@media screen and (max-width: 768px) and (orientation: landscape) {
+    .row.chat-mobile {
+        height: 300px;
+    }
+    .container {
+        max-width: 100%;
+    }
+    .username-field {
+        height: 45px;
+
+    }
+}
+@media screen and (max-width: 700px) and (orientation: landscape) {
+    .row.chat-mobile {
+        height: 200px;
+    }
+    .container {
+        max-width: 100%;
     }
 }

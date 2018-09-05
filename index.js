@@ -87,9 +87,11 @@ io.on('connection', function(socket){
 
   // Function to remove a Message globally
   socket.on('removeMessage', function(id) {
-    let userIndex = userlist.indexOf(userlist.find(id => id.id === socket.id))
-    if (userlist[userIndex].msgIds.includes(id)) {
-      io.emit('removeMessage', id)
+    if (userlist.find(id => id.id === socket.id)) {
+      let userIndex = userlist.indexOf(userlist.find(id => id.id === socket.id))
+      if (userlist[userIndex].msgIds.includes(id)) {
+        io.emit('removeMessage', id)
+      }
     }
   })
 
