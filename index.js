@@ -2,12 +2,18 @@
 const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+const fs = require('fs');
 
 const userlist = [];
+const adminlist = [];
 let msgCounter = 0;
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/admin', function(req, res){
+  res.sendFile(__dirname + '/admin.html');
 });
 
 app.get('/style.css', function(req, res){
@@ -15,6 +21,92 @@ app.get('/style.css', function(req, res){
 });
 
 io.on('connection', function(socket){
+
+  socket.on('adminLogin', function(pass) {
+    if (pass == "1") {
+      adminlist.push({
+        "id": socket.id,
+        "admin": true
+      }) // ID -> Array
+      socket.emit('yesYouAreAdmin');
+      console.log(adminlist)
+    }
+  })
+
+  socket.on('requestChatRooms', function() {
+    if (adminlist.find(id => id.id === socket.id) || userlist.find(id => id.id === socket.id)) {
+      fs.readFile('chatrooms.json', (err, data) => {
+        if (err == null) {
+          data = JSON.parse(data);
+          socket.emit('responseChatRooms', data)
+        } else {
+          console.log(err);
+        }
+      });
+    }
+  })
+
+  socket.on('setRoomState', function(room, state) {
+    if (adminlist.find(id => id.id === socket.id)) {
+      console.log('roomstate', room, state)
+      fs.readFile('chatrooms.json', (err, data) => {
+        if (err == null) {
+          data = JSON.parse(data);
+          console.log(data);
+          if (state == "public") {
+            data[room].privacy = "public"
+            socket.emit('isPublic', room)
+          } else if (state == "private") {
+            data[room].privacy = "private"
+            socket.emit('isPrivate', room)
+          }
+          data = JSON.stringify(data);
+          fs.writeFile('chatrooms.json', data, (err) => { if (err) console.log(err) });
+        }
+      })
+    }
+  })
+
+  socket.on('removeRoom', function(room) {
+    if (adminlist.find(id => id.id === socket.id)) {
+      fs.readFile('chatrooms.json', (err, data) => {
+        if (err == null) {
+          data = JSON.parse(data);
+          delete data[room];
+          data = JSON.stringify(data);
+          socket.emit('roomDeleted', room)
+          fs.writeFile('chatrooms.json', data, (err) => { if (err) console.log(err) });
+        }
+      })
+    }
+  })
+
+  socket.on('createNewRoom', function(name, state) {
+    if (adminlist.find(id => id.id === socket.id)) {
+      fs.readFile('chatrooms.json', (err, data) => {
+        if (err == null) {
+          data = JSON.parse(data);
+          data[name] = {"privacy": state};
+          data = JSON.stringify(data);
+          socket.emit('roomCreate', name, state)
+          fs.writeFile('chatrooms.json', data, (err) => { if (err) console.log(err) });
+        }
+      })
+    }
+  })
+
+  socket.on('whitelistUser', function(user) {
+    if (adminlist.find(id => id.id === socket.id)) {
+      fs.readFile('whitelist.json', (err, data) => {
+        data = JSON.parse(data);
+        data.push(user);
+        console.log(data)
+        data = JSON.stringify(data);
+        fs.writeFile('whitelist.json', data, (err) => { if (err) console.log(err) });
+        socket.emit('userWhitelisted', user)
+      })
+    }
+  })
 
   // Login Handler (Add new User and announce it)
   socket.on('login', function(username){

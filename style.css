@@ -1,8 +1,10 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:500');
+
 body,
 html {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .login-wrapper {
@@ -123,6 +125,30 @@ html {
     border-top: 1px solid black;
 }
 
+.admin-ui {
+    margin: 2.5%;
+}
+
+.room {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    font-size: 18px;
+    background-color: rgb(126, 126, 126);
+    color: white;
+    border: 10px solid white;
+    border-radius: 15px;
+}
+
+.create {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    font-size: 18px;
+    background-color: rgb(167, 167, 167);
+    color: white;
+    border: 10px solid white;
+    border-radius: 15px;
+}
+
 @media only screen and (max-width: 600px) {
     .removalButton {
         width: 24px;
@@ -163,7 +189,17 @@ html {
     .chat-ui {
         margin-top: 10%;
     }
+    .room {
+        font-size: 10px;
+        display:block;
+        padding-left: 3%;
+        text-align: center;
+    }
+    .room:first-letter {
+        font-size: 16px;
+    }​
 }
+
 @media screen and (max-width: 768px) and (orientation: landscape) {
     .row.chat-mobile {
         height: 300px;
@@ -176,6 +212,7 @@ html {
 
     }
 }
+
 @media screen and (max-width: 700px) and (orientation: landscape) {
     .row.chat-mobile {
         height: 200px;
