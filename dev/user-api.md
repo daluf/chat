@@ -8,24 +8,11 @@
 
 #### login
 * description: upgrade a socket to a logged in user
-* preqrequisites: not-logged-in
-* payload: usersname - string
+* preqrequisites: not-logged-in, available username
+* payload: username - string
 * response: success flag - boolean
 * side-effects:
 	* mark user as logged-in
-
-#### getOnlineUsers
-* description: get all users that are currently logged in on the server
-* preqrequisites: logged-in socket
-* payload: none
-* response: list of users - string[]
-```
-[
-    "user1",
-    "user2",
-    "...."
-]
-```
 
 #### listRooms
 * description: get all rooms on the server
@@ -36,7 +23,7 @@
 [
     {name: "Geheimraum", public: false, access: true},
     {name: "Lobby", public: true},
-    {name: "Ausbildderraum", public: false, access: false},
+    {name: "Ausbilderraum", public: false, access: false},
     "...."
 ]
 ```
@@ -49,6 +36,19 @@
 * side-effects:
 	* add user to room
 	* broadcast `userJoined` event to all other users in the room
+
+#### listRoomUsers
+* description: get all users that are currently in the same room as the user
+* preqrequisites: logged-in socket, in-room
+* payload: none
+* response: list of users - {username: string, status: "online"|"away"|"busy"}[]
+```
+[
+	{username: "daluf", status: "away"},
+	{username: "vtii", status: "busy"},
+    "...."
+]
+```
 
 #### leaveRoom
 * description: leave a chatroom, giving us the possibility to join another room - the server also must stop sending us messages for the room

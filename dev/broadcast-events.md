@@ -33,3 +33,21 @@
 #### disconnect
 * description: emitted to users in a room when a user disconnects
 * payload: username - string
+
+#### createRoom
+* description: show newly created room
+* payload: {name: string, public: boolean}
+```
+{name: "room1", public: true}
+```
+
+#### deleteRoom
+* description: remove room from list
+* payload: name - string
+
+#### changeRoomStatus
+* description: change room status in list
+* payload: {name: string, public: boolean}
+```
+{name: "room1", public: false}
+```
