@@ -1,10 +1,10 @@
 ## Admin-API
 
-#### login
+#### adminLogin
 * description: upgrade a socket to a logged in admin
 * preqrequisites: not-logged-in
 * payload: password - string
-* response: success flag - boolean
+* response: {success: boolean, error?: string}
 * side-effects:
 	* mark admin as admin-logged-in
 
@@ -26,7 +26,7 @@
 * description: create a new chatroom on the server
 * preqrequisites: admin-logged-in socket, available room name
 * payload: {name: string, public: boolean}
-* response: success flag - boolean
+* response: {success: boolean, error?: string, data: {name: string, public: boolean}}
 * side-effects: 
 	* show created room
 	* save new room into JSON
@@ -36,7 +36,7 @@
 * description: delete a chatroom from the server
 * preqrequisites: admin-logged-in socket, created room 
 * payload: roomName - string
-* response: success flag - boolean
+* response: {success: boolean, error?: string}
 * side-effects: 
 	* remove users from deleted room
 	* delete room

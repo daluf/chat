@@ -2,7 +2,7 @@
 
 #### userJoined
 * description: emitted to other users in a room when a new user joins the room
-* payload: username - string
+* payload: {username: string, status: string}
 
 #### userLeft
 * description: emitted to other users in a room when a user leaves the room
@@ -27,7 +27,6 @@
 * payload: {username: string, status: "online"|"away"|"busy"}
 ```
 {username: "daluf", status: "away"}
-{username: "vtii", status: "busy"}
 ```
 
 #### disconnect

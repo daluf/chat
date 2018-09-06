@@ -1,227 +1,305 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+	<link rel="stylesheet" href="/style.css">
 
-    <link rel="stylesheet" href="/style.css">
+	<title>Hello, chat!</title>
+</head>
+<body>
 
-    <title>Hello, chat!</title>
-  </head>
-  <body>
+	<div class="login-wrapper">
+	<div class="login-card">
+		<div class="login-title">
+		Login into Chat
+		</div>
 
-    <div class="login-wrapper">
-      <div class="login-card">
-        <div class="login-title">
-          Login into Chat
-        </div>
-        
-        <div>
-          <input id="usernameText" class="username-field" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-        </div>
-        
-        <div>
-          <button onclick="login();" type="button" class="btn btn-primary login-button">Login</button>
-        </div>
-      </div>
-    </div>
+		<div>
+		<input id="usernameText" class="username-field" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+		</div>
 
-    <div class="container chat-ui">
+		<div>
+		<button onclick="login();" type="button" class="btn btn-primary login-button">Login</button>
+		</div>
+	</div>
+	</div>
 
-      <div class="row chat-mobile">
-        <div class="col-10 chat-messages" id="chat-messages">
-          <div class="chat-text">
+	<div class="row col-12" id="roomies">
+		<div class="col-12 text-center" style="padding-top: 30px; padding-bottom: 30px; font-size: 30px;">Chat Room List</div>
+	</div>
 
-          </div>
-        </div>
-        <div class="col-2">
-          <div class="chat-users">
+	<div class="container chat-ui">
 
-          </div>
-        </div>
+	<div class="row chat-mobile">
+		<div class="col-10 chat-messages" id="chat-messages">
+		<div class="chat-text">
 
-      </div>
+		</div>
+		</div>
+		<div class="col-2">
+		<div class="chat-users">
 
-      <div class="row chat-border">
+		</div>
+		</div>
 
-        <div class="col-10 chat-input">
-                    
-          <div class="input-group mb-3">
-            <input id="message-input" type="text" class="form-control" placeholder="Message" aria-label="Message" aria-describedby="button-addon2">
-            <div class="input-group-append">
-              <button onclick="sendTextMessage();" class="btn btn-outline-secondary" type="button" id="button-addon2">Send</button>
-            </div>
-          </div>
+	</div>
 
-        </div>
+	<div class="row chat-border">
 
-        <div class="col-2 chat-input">
-            <div class="dropdown">
-              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Status
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a id="statusOnline" class="dropdown-item active" onclick="changeStatus('online')" href="#">Online</a>
-                <a id="statusAway" class="dropdown-item" onclick="changeStatus('away')" href="#">Away</a>
-                <a id="statusBusy" class="dropdown-item" onclick="changeStatus('busy')" href="#">Busy</a>
-              </div>
-            </div>
-        </div>
+		<div class="col-10 chat-input">
 
-      </div>
+		<div class="input-group mb-3">
+			<input id="message-input" type="text" class="form-control" placeholder="Message" aria-label="Message" aria-describedby="button-addon2">
+			<div class="input-group-append">
+			<button onclick="sendTextMessage();" class="btn btn-outline-secondary" type="button" id="button-addon2">Send</button>
+			</div>
+		</div>
 
-    </div>
+		</div>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.13/dist/sweetalert2.all.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-    const socket = io();
+		<div class="col-2 chat-input">
+			<div class="dropdown">
+			<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Status
+			</button>
+			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				<a id="statusOnline" class="dropdown-item active" onclick="changeStatus('online')" href="#">Online</a>
+				<a id="statusAway" class="dropdown-item" onclick="changeStatus('away')" href="#">Away</a>
+				<a id="statusBusy" class="dropdown-item" onclick="changeStatus('busy')" href="#">Busy</a>
+			</div>
+			</div>
+		</div>
 
-      // Escape function for HTML code
-      function escapeHtml(replaceText) {
-        return replaceText
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/“/g, "&quot;")
-          .replace(/#/g, "&num;")
-          .replace(/’/g, "&#039;");
-      } 
+	</div>
 
-      // Change your Status
-      function changeStatus(status) {
-        socket.emit('changeStatus', status)
-        $("#statusOnline").removeClass('active')
-        $("#statusAway").removeClass('active')
-        $("#statusBusy").removeClass('active')
-        if (status == 'online') {
-          $("#statusOnline").addClass('active')
-        }
-        if (status == 'away') {
-          $("#statusAway").addClass('active')
-        }
-        if (status == 'busy') {
-          $("#statusBusy").addClass('active')
-        }
-      }
+	</div>
 
-      // Change Status of specified user
-      socket.on('changeStatus', function(id, status) {
-        $("#"+id).removeClass('online')
-        $("#"+id).removeClass('away')
-        $("#"+id).removeClass('busy')
+	<!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.13/dist/sweetalert2.all.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+	<script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+	const socket = io();
 
-        $("#"+id).addClass(status)
-      })
+	// Escape function for HTML code
+	var entityMap = {
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'"': '&quot;',
+		"'": '&#39;',
+		'/': '&#x2F;',
+		'`': '&#x60;',
+		'=': '&#x3D;',
+		'#': '&num;'
+	};
 
-      // Automatically scroll to new Message
-      function scrollDown() {
-        document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight
-      }
+	function escapeHtml (string) {
+		return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+			return entityMap[s];
+		});
+	}
 
-      // Hiding Chat-UI if user isnt logged in
-      $( document ).ready(function() {
-        $(".chat-ui").hide();
-        socket.emit('getOnlineUsers');
-      });
+	// Change your Status
+	function changeStatus(status) {
+		socket.emit('changeStatus', status, (success, error) => {
+			if (!success) {
+				swal(
+					'Error!',
+					error,
+					'error'
+				)
+			}
+		})
+		$("#statusOnline").removeClass('active')
+		$("#statusAway").removeClass('active')
+		$("#statusBusy").removeClass('active')
+		if (status == 'online') {
+		$("#statusOnline").addClass('active')
+		}
+		if (status == 'away') {
+		$("#statusAway").addClass('active')
+		}
+		if (status == 'busy') {
+		$("#statusBusy").addClass('active')
+		}
+	}
 
-      // Submit Login
-      function login() {
-        socket.emit('login', $("#usernameText").val()); // Take Value in Input Field "usernameText" and send to Server
-      };
+	// Change Status of specified user
+	socket.on('changeStatus', function(data) {
+		id = data.username
+		status = data.status
+		$("#"+id).removeClass('online')
+		$("#"+id).removeClass('away')
+		$("#"+id).removeClass('busy')
 
-      // Send text-message to Server
-      function sendTextMessage() {
-        if ($("#message-input").val()) {
-          socket.emit('message', $("#message-input").val());
-          $("#message-input").val('');
-        }
-      }
+		$("#"+id).addClass(status)
+	})
 
-      // Login on Enter-button
-      $("#usernameText").keypress(function(e) {
-        if(e.which == 13) {
-          if ($("#usernameText").val()) {
-            socket.emit('login', $("#usernameText").val());
-            $("#usernameText").val('');
-          }
-        }
-      });
+	// Automatically scroll to new Message
+	function scrollDown() {
+		document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight
+	}
 
-      // Send text-message on Enter-button
-      $("#message-input").keypress(function(e) {
-        if(e.which == 13) {
-          if ($("#message-input").val()) {
-            socket.emit('message', $("#message-input").val());
-            $("#message-input").val('');
-          }
-        }
-      });
+	// Hiding Chat-UI if user isnt logged in
+	$( document ).ready(function() {
+		$(".chat-ui").hide();
+		$("#roomies").hide();
+	});
 
-      // Hide login-wrapper after the User is logged in
-      socket.on('showChat', function() {
-        $(".login-wrapper").hide();
-        $(".chat-ui").show();
-      });
+	// Submit Login
+	function login() {
+		socket.emit('login', $("#usernameText").val(), (data) => {
+			if (data.success) {
+				$(".login-wrapper").hide();
+				socket.emit('listRooms', (rooms) => {
+					$("#roomies").show();
+					for (i = 0; i < rooms.length; i++) {
+						if (rooms[i].public === true) {
+							$.tmpl("<button onclick=joinRoom('"+rooms[i].name+"') class='col-3 room'><i id="+rooms[i].name+" class='fas fa-lock-open' style='color: rgb(0,160,0);'></i> "+rooms[i].name+"</button>").appendTo( "#roomies" );
+						} else if (rooms[i].access === true)  {
+							$.tmpl("<button onclick=joinRoom('"+rooms[i].name+"') class='col-3 room'><i id="+rooms[i].name+" class='fas fa-lock-open' style='color: rgb(0,160,0);'></i> "+rooms[i].name+"</button>").appendTo( "#roomies" );
+						} else {
+							$.tmpl("<button onclick=joinRoom('"+rooms[i].name+"') class='col-3 room'><i id="+rooms[i].name+" class='fas fa-lock' style='color: rgb(177,0,0);'></i> "+rooms[i].name+"</button>").appendTo( "#roomies" );
+						}
+					}
+				})
+			} else {
+				swal(
+					'Error!',
+					data.error,
+					'error'
+				)
+			}
+		}); // Take Value in Input Field "usernameText" and send to Server
+	};
 
-      // Get online Users
-      socket.on('getOnlineUsers', function(onlineList, statusList) {
-        for (i = 0; i < onlineList.length; i++) {
-          $( ".chat-users" ).append( "<div id="+onlineList[i]+"> "+escapeHtml(onlineList[i])+" </div>" );
-          $("#"+onlineList[i]).addClass(statusList[i]);
-        }
-      });
+	function joinRoom(name) {
+		socket.emit('joinRoom', name, (data) => {
+			if (data.success) {
+				$('#roomies').hide();
+				$('.chat-ui').show();
+				socket.emit('listRoomUsers', (roomUsers) => {
+					for (i = 0; i < roomUsers.length; i++) {
+						$( ".chat-users" ).append( "<div id="+roomUsers[i].username+"> "+escapeHtml(roomUsers[i].username)+" </div>" );
+						$("#"+roomUsers[i].username).addClass(roomUsers[i].status);
+					}
+				});
+			} else {
+				swal(
+					'Error!',
+					data.error,
+					'error'
+				)
+			}
+		})
+	};
 
-      // New-joined user will appear
-      socket.on('userConnected', function(username) {
-        $( ".chat-users" ).append( "<div id="+escapeHtml(username)+"> "+escapeHtml(username)+" </div>" )
-        $("#"+username).addClass('online')
-      });
+	socket.on('userJoined', (data) => {
+		username = data.username
+		status = data.status
+		$( ".chat-users" ).append( "<div id="+username+"> "+escapeHtml(username)+" </div>" );
+		$("#"+username).addClass(status);
+	})
 
-      // Remove User on Disconnect
-      socket.on('clientDisconnect', function(username) {
-        console.log('disconnected: ' + username)
-        $( "#"+username+"" ).remove();
-      });
+	socket.on('userLeft', (username) => {
+		$("#"+username).remove();
+	})
 
-      // Receive and show new Message
-      socket.on('newMessage', function(username, text, id, owner) {
-        if (owner) {
-          $( ".chat-text" ).append( "<div class='row' id='"+id+"'> <div class='col-10'> <b> "+escapeHtml(username)+"</b>:<br><p class='message'>"+escapeHtml(text)+"</p> </div> <div class='col-1'> <button type='button' onclick='removeMessage("+id+");' class='btn btn-danger removalButton'>X</button></div>" );
-        } else {
-          $( ".chat-text" ).append( "<div id='"+id+"'> <b> "+escapeHtml(username)+"</b>:<br><p>"+escapeHtml(text)+"</p></div>" );
-        }
-        scrollDown();
-      });
+	// Send text-message to Server
+	function sendTextMessage() {
+		if ($("#message-input").val()) {
+			socket.emit('sendMessage', $("#message-input").val(), (data) => {
+				if (data.success) {
+					$( ".chat-text" ).append( "<div class='row' id="+data.message.id+"> <div class='col-10'> <b> "+escapeHtml(data.message.username)+"</b>:<br><p class='message'>"+escapeHtml(data.message.message)+"</p> </div> <div class='col-1'> <button type='button' onclick=removeMessage('"+data.message.id+"'); class='btn btn-danger removalButton'>X</button></div>" );
+					scrollDown();
+				} else {
+					swal(
+						'Error!',
+						data.error,
+						'error'
+					)
+				}
+			});
+			$("#message-input").val('');
+		}
+	};
 
-      // Alert on too long Username
-      socket.on('alertError', function(error) {
-        swal(
-          'Error!',
-          error,
-          'error'
-        )
-      });
+	// Receive and show new Message
+	socket.on('message', function(message) {
+		console.log(message)
+		/*if (owner) {
+			$( ".chat-text" ).append( "<div class='row' id='"+id+"'> <div class='col-10'> <b> "+escapeHtml(username)+"</b>:<br><p class='message'>"+escapeHtml(text)+"</p> </div> <div class='col-1'> <button type='button' onclick='removeMessage("+id+");' class='btn btn-danger removalButton'>X</button></div>" );
+		} else {
+			$( ".chat-text" ).append( "<div id='"+id+"'> <b> "+escapeHtml(username)+"</b>:<br><p>"+escapeHtml(text)+"</p></div>" );
+		}*/
+		$( ".chat-text" ).append( "<div id='"+message.id+"'> <b>"+escapeHtml(message.username)+"</b>:<br><p>"+escapeHtml(message.message)+"</p></div>" );
+		scrollDown();
+	});
 
-      // Send to server that you'd like to remove your message
-      function removeMessage(id) {
-        socket.emit('removeMessage', id);
-      }
+	// Send to server that you'd like to remove your message
+	function removeMessage(id) {
+		socket.emit('deleteMessage', id, (data) => {
+			if (data.success) {
 
-      // Remove requested Message
-      socket.on('removeMessage', function(id) {
-        $( "#"+id ).remove();
-      })
+			} else {
+				swal(
+					'Error!',
+					data.error,
+					'error'
+				)
+			};
+		});
+	};
 
-    </script>
-  </body>
+	socket.on('deleteMessage', function(id) {
+		document.getElementById(id.id).remove();
+	});
+
+	// Login on Enter-button
+	$("#usernameText").keypress(function(e) {
+		if(e.which == 13) {
+			if ($("#usernameText").val()) {
+				login();
+				$("#usernameText").val('');
+			}
+		}
+	});
+
+	// Send text-message on Enter-button
+	$("#message-input").keypress(function(e) {
+		if(e.which == 13) {
+		if ($("#message-input").val()) {
+			sendTextMessage();
+			$("#message-input").val('');
+		}
+		}
+	});
+
+	// Alert on too long Username
+	socket.on('alertError', function(error) {
+		swal(
+		'Error!',
+		error,
+		'error'
+		)
+	});
+
+	// Remove requested Message
+	socket.on('removeMessage', function(id) {
+		$( "#"+id ).remove();
+	})
+
+	</script>
+</body>
 </html>

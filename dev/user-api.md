@@ -10,7 +10,7 @@
 * description: upgrade a socket to a logged in user
 * preqrequisites: not-logged-in, available username
 * payload: username - string
-* response: success flag - boolean
+* response: {success: true}|{success: false, err: string}
 * side-effects:
 	* mark user as logged-in
 
@@ -32,7 +32,7 @@
 * description: join a chatroom, giving us access to all new messages sent inside that room
 * preqrequisites: logged-in socket, access-if-not-public, not-in-room
 * payload: roomName - string
-* response: success - boolean
+* response: {success: boolean, error: string}
 * side-effects:
 	* add user to room
 	* broadcast `userJoined` event to all other users in the room
@@ -63,7 +63,7 @@
 * description: send a message in the current room
 * preqrequisites: logged-in socket, in-room
 * payload: message - string
-* response: success - boolean
+* response: {success: boolean, error?: string}|{success: boolean, id: string, username: string, message: string}
 * side-effects:
 	* broadcast `message` event to all users in the room
 
@@ -71,7 +71,7 @@
 * description: delete a previously sent message
 * prerequisites: logged-in socket, in-room, own-message
 * payload: messageId - string
-* response: success - boolean
+* response: {success: boolean, error?: string}
 * side-effects:
 	* broadcast `deleteMessage` event to all users in the room
 
@@ -79,7 +79,7 @@
 * descripion: set own status, eg: online, away, ...
 * prerequisites: logged-in socket, in-room
 * payload: newStatus - "online"|"away"|"busy"
-* response: success - boolean
+* response: {success: boolean, error?: string}
 * side-effects:
 	* mark user with newStatus
 	* broadcast `changeStatus` event to all users in the room

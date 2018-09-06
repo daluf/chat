@@ -43,7 +43,7 @@
 					<div class="input-group-prepend">
 						<div style="height: 71%" class="input-group-text">
 							<label style="margin-bottom: 0rem;">
-								<input type="radio" value="public" checked="checked" name="radio">
+								<input type="radio" value="true" checked="checked" name="radio">
 								&nbsp;Public
 							</label>
 						</div>
@@ -51,7 +51,7 @@
 					<div class="input-group-prepend">
 						<div style="height: 71%" class="input-group-text">
 							<label style="margin-bottom: 0rem;">
-								<input type="radio" value="private" name="radio">
+								<input type="radio" value="false" name="radio">
 								&nbsp;Private
 							</label>
 						</div>
@@ -105,7 +105,24 @@
 		let name = $("#roomName").val();
 		let state = $("input[name='radio']:checked").val();
 		if (name && state) {
-			socket.emit('createNewRoom', name, state)
+			if (state === "true") { state = true } else { state = false }
+			socket.emit('createRoom', {name: name, public: state}, (data) => {
+				if (data.success) {
+					name = data.data.name
+					state = data.data.public
+					if (state == true) {
+						$.tmpl( "<div id="+name+"RoomDiv"+" class='col-3 room'><i id="+name+" style='color: rgb(0, 160, 0);' class='fas fa-lock-open'></i> "+name+" <div class='dropdown text-right'><button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'><a onclick='setPublic2("+name+")' class='dropdown-item'>Public</a><a onclick='setPrivate2("+name+")' class='dropdown-item'>Private</a><a onclick=deleteRoom('"+name+"'); class='dropdown-item btn-danger'>Delete</a></div></div></div>").appendTo( "#roomies" );
+					} else if (state == false) {
+						$.tmpl( "<div id="+name+"RoomDiv"+" class='col-3 room'><i id="+name+" style='color: rgb(177,0,0);' class='fas fa-lock'></i> "+name+" <div class='dropdown text-right'><button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'><a onclick='setPublic2("+name+")' class='dropdown-item'>Public</a><a onclick='setPrivate2("+name+")' class='dropdown-item'>Private</a><a oonclick=deleteRoom('"+name+"'); class='dropdown-item btn-danger'>Delete</a></div></div></div>").appendTo( "#roomies" );
+					}
+				} else {
+					swal(
+					'Error!',
+					data.error,
+					'error'
+					)
+				}
+			})
 		}
 	}
 
@@ -117,8 +134,43 @@
 	}
 
 	function login() {
-    	socket.emit('adminLogin', $("#passwordInput").val()); // Take Value in Input Field "usernameText" and send to Server
+    	socket.emit('adminLogin', $("#passwordInput").val(), (data) => {
+			if (data.success) {
+				$(".login-wrapper").hide();
+				$(".admin-ui").show();
+				socket.emit('listRooms', (rooms) => {
+					console.log(rooms);
+					console.log(rooms.length);
+					for (i = 0; i < rooms.length; i++) {
+						if (rooms[i].public) {
+							$.tmpl( "<div id="+rooms[i].name+" class='col-3 room'><i id=1"+rooms[i].name+"IconDiv style='color: rgb(0, 160, 0);' class='fas fa-lock-open'></i> ${key} <div class='dropdown text-right'><button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'><a onclick='setPublic(${room})' class='dropdown-item'>Public</a><a onclick='setPrivate(${room})' class='dropdown-item'>Private</a><a onclick=deleteRoom('"+rooms[i].name+"'); class='dropdown-item btn-danger'>Delete</a></div></div></div>", {"key": rooms[i].name, "room": i}).appendTo( "#roomies" );
+						} else {
+							$.tmpl( "<div id="+rooms[i].name+" class='col-3 room'><i id=1"+rooms[i].name+"IconDiv style='color: rgb(177,0,0);' class='fas fa-lock'></i> ${key} <div class='dropdown text-right'><button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'><a onclick='setPublic(${room})' class='dropdown-item'>Public</a><a onclick='setPrivate(${room})' class='dropdown-item'>Private</a><a onclick=deleteRoom('"+rooms[i].name+"'); class='dropdown-item btn-danger'>Delete</a></div></div></div>", {"key": rooms[i].name, "room": i}).appendTo( "#roomies" );
+						}
+					}
+				})
+				socket.emit('requestWhitelist', (whitelist) => {
+					for (i = 0; i < whitelist.length; i++) {
+						$.tmpl('<button id="Whitelist'+i+'" type="button" onclick="removeFromWhitelist('+i+')" class="list-group-item list-group-item-action">${user}</button>', {user: whitelist[i]}).prependTo( "#whitelistedUsers" );
+					}
+				})
+			} else {
+				swal(
+					'Error!',
+					data.error,
+					'error'
+				)
+			}
+		}); // Take Value in Input Field "usernameText" and send to Server
 	};
+
+	function deleteRoom(room) {
+		socket.emit('deleteRoom', room, (success, room) => {
+			if (data.success) {
+				$("#"+data.room).remove();
+			}
+		})
+	}
 
 	function setPublic(room) {
 		socket.emit('setRoomState', keys[room], "public")
@@ -126,10 +178,6 @@
 
 	function setPrivate(room) {
 		socket.emit('setRoomState', keys[room], "private")
-	}
-
-	function removeRoom(room) {
-		socket.emit('removeRoom', keys[room])
 	}
 
 	function setPublic2(room) {
@@ -150,14 +198,6 @@
 		});
 	}
 
-	socket.on('roomCreate', function(name, state) {
-		if (state == 'public') {
-			$.tmpl( "<div id="+name+"RoomDiv"+" class='col-3 room'><i id="+name+" style='color: rgb(0, 160, 0);' class='fas fa-lock-open'></i> "+name+" <div class='dropdown text-right'><button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'><a onclick='setPublic2("+name+")' class='dropdown-item'>Public</a><a onclick='setPrivate2("+name+")' class='dropdown-item'>Private</a><a onclick='removeRoom2( "+name+" )' class='dropdown-item btn-danger'>Delete</a></div></div></div>").appendTo( "#roomies" );
-		} else if (state == 'private') {
-			$.tmpl( "<div id="+name+"RoomDiv"+" class='col-3 room'><i id="+name+" style='color: rgb(177,0,0);' class='fas fa-lock'></i> "+name+" <div class='dropdown text-right'><button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'><a onclick='setPublic2("+name+")' class='dropdown-item'>Public</a><a onclick='setPrivate2("+name+")' class='dropdown-item'>Private</a><a onclick='removeRoom2( "+name+" )' class='dropdown-item btn-danger'>Delete</a></div></div></div>").appendTo( "#roomies" );
-		}
-	})
-
 	socket.on('isPublic', function(room) {
 		$("#"+room).removeClass('fas fa-lock-open')
 		$("#"+room).removeClass('fas fa-lock')
@@ -168,35 +208,6 @@
 		$("#"+room).removeClass('fas fa-lock-open')
 		$("#"+room).removeClass('fas fa-lock')
 		$("#"+room).addClass('fas fa-lock').css('color', 'rgb(177, 0, 0)')
-	})
-
-	socket.on('roomDeleted', function(room) {
-		$("#"+room+"RoomDiv").remove('')
-	})
-
-	socket.on('yesYouAreAdmin', function() {
-		$(".login-wrapper").hide();
-		$(".admin-ui").show();
-		socket.emit('requestChatRooms')
-		socket.emit('requestWhitelist', (whitelist) => {
-			for (i = 0; i < whitelist.length; i++) {
-				$.tmpl('<button id="Whitelist'+i+'" type="button" onclick="removeFromWhitelist('+i+')" class="list-group-item list-group-item-action">${user}</button>', {user: whitelist[i]}).prependTo( "#whitelistedUsers" );
-			}
-		})
-	})
-
-	socket.on('responseChatRooms', function(rooms) {
-		rooms = rooms
-		console.log(Object.keys(rooms));
-		keys = Object.keys(rooms);
-		for (i = 0; i < Object.keys(rooms).length; i++) {
-			let key = Object.keys(rooms)[i]
-			if (rooms[key].privacy == 'public') {
-				$.tmpl( "<div id="+key+"RoomDiv"+" class='col-3 room'><i id="+key+" style='color: rgb(0, 160, 0);' class='fas fa-lock-open'></i> ${key} <div class='dropdown text-right'><button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'><a onclick='setPublic(${room})' class='dropdown-item'>Public</a><a onclick='setPrivate(${room})' class='dropdown-item'>Private</a><a onclick='removeRoom( ${room} )' class='dropdown-item btn-danger'>Delete</a></div></div></div>", {"key": key, "room": i}).appendTo( "#roomies" );
-			} else if (rooms[key].privacy == 'private') {
-				$.tmpl( "<div id="+key+"RoomDiv"+" class='col-3 room'><i id="+key+" style='color: rgb(177,0,0);' class='fas fa-lock'></i> ${key} <div class='dropdown text-right'><button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'><a onclick='setPublic(${room})' class='dropdown-item'>Public</a><a onclick='setPrivate(${room})' class='dropdown-item'>Private</a><a onclick='removeRoom( ${room} )' class='dropdown-item btn-danger'>Delete</a></div></div></div>", {"key": key, "room": i}).appendTo( "#roomies" );
-			}
-		}
 	})
 
 	$("#whitelistInput").keypress(function(e) {
@@ -215,7 +226,7 @@
 	$("#passwordInput").keypress(function(e) {
 		if(e.which == 13) {
 			if ($("#passwordInput").val()) {
-				socket.emit('adminLogin', $("#passwordInput").val());
+				login();
 				$("#passwordInput").val('');
 			}
 		}
