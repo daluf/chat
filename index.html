@@ -298,8 +298,9 @@
 		if ($("#message-input").val()) {
 			socket.emit('sendMessage', $("#message-input").val(), (data) => {
 				if (data.success) {
-					$( ".chat-text" ).append( "<div class='row' id="+data.message.id+"> <div class='col-10'> <b> "+escapeHtml(data.message.username)+"</b>:<br><p class='message'>"+escapeHtml(data.message.message)+"</p> </div> <div class='col-1'> <button type='button' onclick=removeMessage('"+data.message.id+"'); class='btn btn-danger removalButton'>X</button></div>" );
+					$( ".chat-messages" ).append( "<div class='row' id="+data.message.id+"> <div class='col-10'> <b> "+escapeHtml(data.message.username)+"</b>:<br><p class='message'>"+escapeHtml(data.message.message)+"</p> </div> <div class='col-1'> <button type='button' onclick=removeMessage('"+data.message.id+"'); class='btn btn-danger removalButton'>X</button></div>" );
 					scrollDown();
+					$("#message-input").val('');
 				} else {
 					swal(
 						'Error!',
@@ -308,7 +309,6 @@
 					)
 				}
 			});
-			$("#message-input").val('');
 		}
 	};
 
