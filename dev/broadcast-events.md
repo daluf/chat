@@ -35,14 +35,14 @@
 
 #### createRoom
 * description: show newly created room
-* payload: {name: string, public: boolean}
+* payload: {data: {name: string, public: boolean}, access: boolean}
 ```
-{name: "room1", public: true}
+{data: {name: "room1", public: true}, access: true}
 ```
 
 #### deleteRoom
 * description: remove room from list
-* payload: name - string
+* payload: {name: string, inroom: boolean}
 
 #### changeRoomStatus
 * description: change room status in list

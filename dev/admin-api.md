@@ -47,7 +47,7 @@
 * description: change room status
 * preqrequisites: admin-logged-in socket, created room
 * payload: {name: string, public: boolean}
-* response: success flag - boolean
+* response: {success: boolean, error?: string}
 * side-effects: 
 	* show new room status
 	* save room status into JSON
@@ -82,7 +82,7 @@
 * description: remove user from whitelist
 * preqrequisites: admin-logged-in socket, user whitelisted
 * payload: username - string
-* response: success flag - boolean
+* response: {success: boolean, error?: string}
 * side-effects: 
 	* remove whitelisted user
 	* remove whitelisted user from JSON

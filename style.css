@@ -65,6 +65,17 @@ html {
     overflow: scroll;
 }
 
+.chat-leave {
+  border-left: 1px solid black;
+  padding-left: 20px;
+  padding-top: 15px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  scroll-behavior: auto;
+  overflow: scroll;
+}
+
 .chat-users {
     border-left: 1px solid black;
     padding-left: 15px;
@@ -73,6 +84,9 @@ html {
     white-space: nowrap;
     text-overflow: ellipsis;
     height: 100%;
+    max-height: 87.5%;
+    scroll-behavior: auto;
+    overflow: scroll;
 }
 
 .chat-input {
@@ -154,6 +168,14 @@ html {
     border-radius: 15px;
 }
 
+.locked {
+  color: rgb(177,0,0);
+}
+
+.unlocked {
+  color: rgb(0, 160, 0);
+}
+
 @media only screen and (max-width: 600px) {
     .removalButton {
         width: 24px;
@@ -203,6 +225,12 @@ html {
     .room:first-letter {
         font-size: 16px;
     }​
+    .chat-users {
+      font-size: 0px;
+    }
+    .chat-users:first-letter {
+      font-size: 16px;
+    }
 }
 
 @media screen and (max-width: 768px) and (orientation: landscape) {
@@ -214,7 +242,22 @@ html {
     }
     .username-field {
         height: 45px;
-
+    }
+    .chat-users {
+      border-left: 1px solid black;
+      padding-left: 15px;
+      padding-top: 15px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      height: 100%;
+      max-height: 74%;
+      scroll-behavior: auto;
+      overflow: scroll;
+      font-size: 0px;
+    }
+    .chat-users:first-letter {
+      font-size: 16px;
     }
 }
 
@@ -224,5 +267,11 @@ html {
     }
     .container {
         max-width: 100%;
+    }
+    .chat-users {
+      font-size: 0px;
+    }
+    .chat-users:first-letter {
+      font-size: 16px;
     }
 }

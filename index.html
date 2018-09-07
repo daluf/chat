@@ -38,14 +38,17 @@
 
 	<div class="row chat-mobile">
 		<div class="col-10 chat-messages" id="chat-messages">
-		<div class="chat-text">
 
-		</div>
 		</div>
 		<div class="col-2">
-		<div class="chat-users">
+			<div class="col-12 chat-leave">
+					<button class="col-12 btn btn-danger" onclick="leaveRoom();" type="button">
+							Leave
+					</button>
+				</div>
+			<div class="chat-users">
 
-		</div>
+			</div>
 		</div>
 
 	</div>
@@ -135,6 +138,22 @@
 		}
 	}
 
+	function leaveRoom() {
+		socket.emit('leaveRoom', (success) => {
+			if (success) {
+				$('.chat-ui').hide();
+				$('#roomies').show();
+				$('.chat-users').empty();
+			} else {
+				swal(
+					'Error!',
+					'Could not leave Room!',
+					'error'
+				)
+			}
+		})
+	}
+
 	// Change Status of specified user
 	socket.on('changeStatus', function(data) {
 		id = data.username
@@ -166,11 +185,11 @@
 					$("#roomies").show();
 					for (i = 0; i < rooms.length; i++) {
 						if (rooms[i].public === true) {
-							$.tmpl("<button onclick=joinRoom('"+rooms[i].name+"') class='col-3 room'><i id="+rooms[i].name+" class='fas fa-lock-open' style='color: rgb(0,160,0);'></i> "+rooms[i].name+"</button>").appendTo( "#roomies" );
+							$.tmpl("<button id="+rooms[i].name+" onclick=joinRoom('"+rooms[i].name+"') class='col-3 room'><i id="+rooms[i].name+"Icon class='"+rooms[i].name+" fas locked fas fa-lock' style='display: none;'></i> "+rooms[i].name+"</button>").appendTo( "#roomies" );
 						} else if (rooms[i].access === true)  {
-							$.tmpl("<button onclick=joinRoom('"+rooms[i].name+"') class='col-3 room'><i id="+rooms[i].name+" class='fas fa-lock-open' style='color: rgb(0,160,0);'></i> "+rooms[i].name+"</button>").appendTo( "#roomies" );
+							$.tmpl("<button id="+rooms[i].name+" onclick=joinRoom('"+rooms[i].name+"') class='col-3 room'><i id="+rooms[i].name+"Icon class='"+rooms[i].name+" unlocked fas fa-lock-open'></i> "+rooms[i].name+"</button>").appendTo( "#roomies" );
 						} else {
-							$.tmpl("<button onclick=joinRoom('"+rooms[i].name+"') class='col-3 room'><i id="+rooms[i].name+" class='fas fa-lock' style='color: rgb(177,0,0);'></i> "+rooms[i].name+"</button>").appendTo( "#roomies" );
+							$.tmpl("<button id="+rooms[i].name+" onclick=joinRoom('"+rooms[i].name+"') class='col-3 room'><i id="+rooms[i].name+"Icon class='"+rooms[i].name+" locked fas fa-lock'></i> "+rooms[i].name+"</button>").appendTo( "#roomies" );
 						}
 					}
 				})
@@ -183,6 +202,64 @@
 			}
 		}); // Take Value in Input Field "usernameText" and send to Server
 	};
+
+	socket.on('createRoom', (data) => {
+		if (data.data.public === true) {
+			$.tmpl("<button id="+data.data.name+" onclick=joinRoom('"+data.data.name+"') class='col-3 room'><i id="+data.data.name+"Icon class='"+data.data.name+" fas locked fas fa-lock' style='display: none;'></i> "+data.data.name+"</button>").appendTo( "#roomies" );
+		} else if (data.data.access === true)  {
+			$.tmpl("<button id="+data.data.name+" onclick=joinRoom('"+data.data.name+"') class='col-3 room'><i id="+data.data.name+"Icon class='"+data.data.name+" unlocked fas fa-lock-open'></i> "+data.data.name+"</button>").appendTo( "#roomies" );
+		} else {
+			$.tmpl("<button id="+data.data.name+" onclick=joinRoom('"+data.data.name+"') class='col-3 room'><i id="+data.data.name+"Icon class='"+data.data.name+" locked fas fa-lock'></i> "+data.data.name+"</button>").appendTo( "#roomies" );
+		}
+	})
+
+	socket.on('deleteRoom', (data) => {
+		$('#'+data.room).remove();
+		if (data.inroom) {
+			$('.chat-ui').hide();
+			$('#roomies').show();
+			$('.chat-users').empty();
+			swal(
+				'Error!',
+				'Your Room has been deleted!',
+				'error'
+			)
+		}
+	})
+
+	socket.on('changeWhitelistStatus', (status) => {
+		if (status) {
+			let count = $('.locked').length
+			let idArr = [];
+			for (i = 0; i < count; i++) {
+				idArr.push($('.locked')[i].id)
+			}
+			for (i = 0; i < idArr.length; i++) {
+				$('#'+idArr[i]).addClass('fa-lock-open').addClass('unlocked')
+				$('#'+idArr[i]).removeClass('fa-lock').removeClass('locked')
+			}
+		} else {
+			let count = $('.unlocked').length
+			let idArr = [];
+			for (i = 0; i < count; i++) {
+				idArr.push($('.unlocked')[i].id)
+			}
+			for (i = 0; i < idArr.length; i++) {
+				$('#'+idArr[i]).addClass('fa-lock').addClass('locked')
+				$('#'+idArr[i]).removeClass('fa-lock-open').removeClass('unlocked')
+			}
+		}
+	})
+
+	socket.on('changeRoomStatus', (data) => {
+		if (data.data.public) {
+			$('.'+data.data.name).hide();
+		} else {
+			if (!data.data.access) {
+				$('.'+data.data.name).show();
+			}
+		}
+	})
 
 	function joinRoom(name) {
 		socket.emit('joinRoom', name, (data) => {
@@ -284,15 +361,6 @@
 			$("#message-input").val('');
 		}
 		}
-	});
-
-	// Alert on too long Username
-	socket.on('alertError', function(error) {
-		swal(
-		'Error!',
-		error,
-		'error'
-		)
 	});
 
 	// Remove requested Message

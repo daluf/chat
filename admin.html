@@ -110,11 +110,31 @@
 				if (data.success) {
 					name = data.data.name
 					state = data.data.public
-					if (state == true) {
-						$.tmpl( "<div id="+name+"RoomDiv"+" class='col-3 room'><i id="+name+" style='color: rgb(0, 160, 0);' class='fas fa-lock-open'></i> "+name+" <div class='dropdown text-right'><button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'><a onclick='setPublic2("+name+")' class='dropdown-item'>Public</a><a onclick='setPrivate2("+name+")' class='dropdown-item'>Private</a><a onclick=deleteRoom('"+name+"'); class='dropdown-item btn-danger'>Delete</a></div></div></div>").appendTo( "#roomies" );
-					} else if (state == false) {
-						$.tmpl( "<div id="+name+"RoomDiv"+" class='col-3 room'><i id="+name+" style='color: rgb(177,0,0);' class='fas fa-lock'></i> "+name+" <div class='dropdown text-right'><button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'><a onclick='setPublic2("+name+")' class='dropdown-item'>Public</a><a onclick='setPrivate2("+name+")' class='dropdown-item'>Private</a><a oonclick=deleteRoom('"+name+"'); class='dropdown-item btn-danger'>Delete</a></div></div></div>").appendTo( "#roomies" );
+					if (state) {
+						$.tmpl( `<div id="${name}" class='col-3 room'>
+								<i id="${name}Icon" style='color: rgb(0, 160, 0);' class='fas fa-lock-open'></i>
+								${name}
+								<div class='dropdown text-right'>
+									<button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button>
+									<div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>
+										<a onclick="changeRoomStatus({name: '${name}', public: true});" class='dropdown-item'>Public</a>
+										<a onclick="changeRoomStatus({name: '${name}', public: false});" class='dropdown-item'>Private</a>
+										<a onclick=deleteRoom('${name}'); class='dropdown-item btn-danger'>Delete</a>
+									</div>
+								</div></div>`).appendTo( "#roomies" );
+					} else {
+							$.tmpl( `<div id="${name}" class='col-3 room'>
+								<i id="${name}Icon" style='color: rgb(177,0,0);' class='fas fa-lock'></i>
+								${name} <div class='dropdown text-right'>
+									<button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button>
+									<div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>
+										<a onclick="changeRoomStatus({name: '${name}', public: true});" class='dropdown-item'>Public</a>
+										<a onclick="changeRoomStatus({name: '${name}', public: false});" class='dropdown-item'>Private</a>
+										<a onclick=deleteRoom('${name}'); class='dropdown-item btn-danger'>Delete</a>
+									</div>
+								</div></div>`).appendTo( "#roomies" );
 					}
+					$("#roomName").val('');
 				} else {
 					swal(
 					'Error!',
@@ -126,32 +146,43 @@
 		}
 	}
 
-	function whitelistUser() {
-		socket.emit("whitelistUser", $("#whitelistInput").val(), (user, id) => {
-			console.log(user, id);
-			$.tmpl('<button id="Whitelist'+id+'" type="button" onclick="removeFromWhitelist('+id+')" class="list-group-item list-group-item-action">${user}</button>', {user: user}).prependTo( "#whitelistedUsers" );
-		})
-	}
-
 	function login() {
     	socket.emit('adminLogin', $("#passwordInput").val(), (data) => {
 			if (data.success) {
 				$(".login-wrapper").hide();
 				$(".admin-ui").show();
 				socket.emit('listRooms', (rooms) => {
-					console.log(rooms);
-					console.log(rooms.length);
 					for (i = 0; i < rooms.length; i++) {
 						if (rooms[i].public) {
-							$.tmpl( "<div id="+rooms[i].name+" class='col-3 room'><i id=1"+rooms[i].name+"IconDiv style='color: rgb(0, 160, 0);' class='fas fa-lock-open'></i> ${key} <div class='dropdown text-right'><button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'><a onclick='setPublic(${room})' class='dropdown-item'>Public</a><a onclick='setPrivate(${room})' class='dropdown-item'>Private</a><a onclick=deleteRoom('"+rooms[i].name+"'); class='dropdown-item btn-danger'>Delete</a></div></div></div>", {"key": rooms[i].name, "room": i}).appendTo( "#roomies" );
+							$.tmpl( `<div id="${rooms[i].name}" class='col-3 room'>
+								<i id="${rooms[i].name}Icon" style='color: rgb(0, 160, 0);' class='fas fa-lock-open'></i>
+								${rooms[i].name}
+								<div class='dropdown text-right'>
+									<button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button>
+									<div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>
+										<a onclick="changeRoomStatus({name: '${rooms[i].name}', public: true});" class='dropdown-item'>Public</a>
+										<a onclick="changeRoomStatus({name: '${rooms[i].name}', public: false});" class='dropdown-item'>Private</a>
+										<a onclick=deleteRoom('${rooms[i].name}'); class='dropdown-item btn-danger'>Delete</a>
+									</div>
+								</div></div>`).appendTo( "#roomies" );
 						} else {
-							$.tmpl( "<div id="+rooms[i].name+" class='col-3 room'><i id=1"+rooms[i].name+"IconDiv style='color: rgb(177,0,0);' class='fas fa-lock'></i> ${key} <div class='dropdown text-right'><button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'><a onclick='setPublic(${room})' class='dropdown-item'>Public</a><a onclick='setPrivate(${room})' class='dropdown-item'>Private</a><a onclick=deleteRoom('"+rooms[i].name+"'); class='dropdown-item btn-danger'>Delete</a></div></div></div>", {"key": rooms[i].name, "room": i}).appendTo( "#roomies" );
+							$.tmpl( `<div id="${rooms[i].name}" class='col-3 room'>
+								<i id="${rooms[i].name}Icon" style='color: rgb(177,0,0);' class='fas fa-lock'></i>
+								${rooms[i].name} <div class='dropdown text-right'>
+									<button class='btn btn-primary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></button>
+									<div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>
+										<a onclick="changeRoomStatus({name: '${rooms[i].name}', public: true});" class='dropdown-item'>Public</a>
+										<a onclick="changeRoomStatus({name: '${rooms[i].name}', public: false});" class='dropdown-item'>Private</a>
+										<a onclick=deleteRoom('${rooms[i].name}'); class='dropdown-item btn-danger'>Delete</a>
+									</div>
+								</div></div>`).appendTo( "#roomies" );
 						}
 					}
 				})
-				socket.emit('requestWhitelist', (whitelist) => {
-					for (i = 0; i < whitelist.length; i++) {
-						$.tmpl('<button id="Whitelist'+i+'" type="button" onclick="removeFromWhitelist('+i+')" class="list-group-item list-group-item-action">${user}</button>', {user: whitelist[i]}).prependTo( "#whitelistedUsers" );
+				socket.emit('getWhitelist', (data) => {
+					console.log(data);
+					for (i = 0; i < data.length; i++) {
+						$.tmpl(`<button id="WhitelistUser${data[i]}" type="button" onclick="removeFromWhitelist('${data[i]}')" class="list-group-item list-group-item-action">${data[i]}</button>`).prependTo( "#whitelistedUsers" );
 					}
 				})
 			} else {
@@ -164,60 +195,55 @@
 		}); // Take Value in Input Field "usernameText" and send to Server
 	};
 
+	function whitelistUser() {
+		socket.emit("addToWhitelist", $("#whitelistInput").val(), (data) => {
+			if (data.success) {
+				$.tmpl(`<button id="WhitelistUser${data.name}" type="button" onclick="removeFromWhitelist('${data.name}')" class="list-group-item list-group-item-action">${data.name}</button>`).prependTo( "#whitelistedUsers" );
+			}
+		})
+	}
+
+	function changeRoomStatus(data) {
+		socket.emit('changeRoomStatus', data, (data) => {
+			if (data.success) {
+				$("#"+data.name+"Icon").removeClass()
+				if (data.public) {
+					$("#"+data.name+"Icon").addClass('fas fa-lock-open').css('color', 'rgb(0, 160, 0)')
+				} else {
+					$("#"+data.name+"Icon").addClass('fas fa-lock').css('color', 'rgb(177, 0, 0)')
+				}
+			} else {
+				swal(
+					'Error!',
+					data.error,
+					'error'
+				)
+			}
+		})
+	}
+
 	function deleteRoom(room) {
-		socket.emit('deleteRoom', room, (success, room) => {
+		socket.emit('deleteRoom', room, (data) => {
 			if (data.success) {
 				$("#"+data.room).remove();
 			}
 		})
 	}
 
-	function setPublic(room) {
-		socket.emit('setRoomState', keys[room], "public")
-	}
+	function removeFromWhitelist(name) {
+		socket.emit('removeFromWhitelist', name, (data) => {
+			if (data.success) {
+				$('#WhitelistUser'+data.name).remove();
+			} else {
 
-	function setPrivate(room) {
-		socket.emit('setRoomState', keys[room], "private")
-	}
-
-	function setPublic2(room) {
-		socket.emit('setRoomState', keys[room], "public")
-	}
-
-	function setPrivate2(room) {
-		socket.emit('setRoomState', keys[room], "private")
-	}
-
-	function removeRoom2(room) {
-		socket.emit('removeRoom', room)
-	}
-
-	function removeFromWhitelist(id) {
-		socket.emit('removeFromWhitelist', id, (data) => {
-			$('#Whitelist'+data).remove();
+			}
 		});
 	}
-
-	socket.on('isPublic', function(room) {
-		$("#"+room).removeClass('fas fa-lock-open')
-		$("#"+room).removeClass('fas fa-lock')
-		$("#"+room).addClass('fas fa-lock-open').css('color', 'rgb(0, 160, 0)')
-	})
-
-	socket.on('isPrivate', function(room) {
-		$("#"+room).removeClass('fas fa-lock-open')
-		$("#"+room).removeClass('fas fa-lock')
-		$("#"+room).addClass('fas fa-lock').css('color', 'rgb(177, 0, 0)')
-	})
 
 	$("#whitelistInput").keypress(function(e) {
 		if(e.which == 13) {
 			if ($("#whitelistInput").val()) {
-				socket.emit("whitelistUser", $("#whitelistInput").val(), (user, id) => {
-					id = id-1
-					console.log(user, id);
-					$.tmpl('<button id="Whitelist'+id+'" type="button" onclick="removeFromWhitelist('+id+')" class="list-group-item list-group-item-action">${user}</button>', {user: user}).prependTo( "#whitelistedUsers" );
-				})
+				whitelistUser();
 				$("#whitelistInput").val('');
 			}
 		}
