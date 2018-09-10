@@ -49,6 +49,12 @@ html {
     margin-top: 15px;
 }
 
+.chat-ui {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .username-field {
     height: 80px;
     width: 400px;
