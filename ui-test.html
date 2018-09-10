@@ -8,22 +8,35 @@
     <!-- Semantic CSS -->
     <link rel="stylesheet" href="semantic.css">
 
-    <title>ui-test</title>
+	<title>ui-test</title>
+
+	<style>
+		.ui.input > input {
+			width: 60%;
+		}
+
+		.login-main {
+			position: relative;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+	</style>
+
   </head>
   <body>
 
-	<div class="ui raised very padded text container segment center aligned">
+	<!-- Main Login Window -->
+	<!-- <div class="login-main ui raised very padded text container segment center aligned">
 		<h2 class="ui header">Login into Chat</h2>
 
-		<div class="ui action input">
+		<div class="ui action input center aligned">
 			<input type="text" placeholder="Username...">
 			<button class="ui button">Login</button>
 		</div>
 
-	</div>
+	</div> -->
 
-
-
+	<!-- Room Selector -->
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Semantic JS -->
