@@ -29,10 +29,6 @@ database.init(() => {
 		res.sendFile(__dirname + '/style.css');
 	});
 
-	app.get('/ui-test.html', function(req, res){
-		res.sendFile(__dirname + '/ui-test.html');
-	});
-
 	app.get('/semantic.js', function(req, res){
 		res.sendFile(__dirname + '/semantic.js');
 	});
