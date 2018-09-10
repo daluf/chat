@@ -138,12 +138,14 @@
 		}
 	}
 
+	// Function to leave a Room
 	function leaveRoom() {
 		socket.emit('leaveRoom', (success) => {
 			if (success) {
 				$('.chat-ui').hide();
 				$('#roomies').show();
 				$('.chat-users').empty();
+				$('.chat-messages').empty();
 			} else {
 				swal(
 					'Error!',
@@ -203,6 +205,7 @@
 		}); // Take Value in Input Field "usernameText" and send to Server
 	};
 
+	// Display Room if Admin creates one
 	socket.on('createRoom', (data) => {
 		if (data.data.public === true) {
 			$.tmpl("<button id="+data.data.name+" onclick=joinRoom('"+data.data.name+"') class='col-3 room'><i id="+data.data.name+"Icon class='"+data.data.name+" fas locked fas fa-lock' style='display: none;'></i> "+data.data.name+"</button>").appendTo( "#roomies" );
@@ -213,6 +216,7 @@
 		}
 	})
 
+	// Remove a Room if Admin deletes it
 	socket.on('deleteRoom', (data) => {
 		$('#'+data.room).remove();
 		if (data.inroom) {
@@ -227,6 +231,7 @@
 		}
 	})
 
+	// Change Whitelist Status if Admin adds/removes you
 	socket.on('changeWhitelistStatus', (status) => {
 		if (status) {
 			let count = $('.locked').length
@@ -251,6 +256,7 @@
 		}
 	})
 
+	// Change Room Status if Admin makes it public/private
 	socket.on('changeRoomStatus', (data) => {
 		if (data.data.public) {
 			$('.'+data.data.name).hide();
@@ -261,6 +267,7 @@
 		}
 	})
 
+	// Function to join a Room
 	function joinRoom(name) {
 		socket.emit('joinRoom', name, (data) => {
 			if (data.success) {
@@ -282,6 +289,7 @@
 		})
 	};
 
+	// Add new User to Userlist
 	socket.on('userJoined', (data) => {
 		username = data.username
 		status = data.status
@@ -289,6 +297,7 @@
 		$("#"+username).addClass(status);
 	})
 
+	// Remove User from Userlist
 	socket.on('userLeft', (username) => {
 		$("#"+username).remove();
 	})
@@ -315,12 +324,7 @@
 	// Receive and show new Message
 	socket.on('message', function(message) {
 		console.log(message)
-		/*if (owner) {
-			$( ".chat-text" ).append( "<div class='row' id='"+id+"'> <div class='col-10'> <b> "+escapeHtml(username)+"</b>:<br><p class='message'>"+escapeHtml(text)+"</p> </div> <div class='col-1'> <button type='button' onclick='removeMessage("+id+");' class='btn btn-danger removalButton'>X</button></div>" );
-		} else {
-			$( ".chat-text" ).append( "<div id='"+id+"'> <b> "+escapeHtml(username)+"</b>:<br><p>"+escapeHtml(text)+"</p></div>" );
-		}*/
-		$( ".chat-text" ).append( "<div id='"+message.id+"'> <b>"+escapeHtml(message.username)+"</b>:<br><p>"+escapeHtml(message.message)+"</p></div>" );
+		$( ".chat-messages" ).append( "<div id='"+message.id+"'> <b>"+escapeHtml(message.username)+"</b>:<br><p class='message'>"+escapeHtml(message.message)+"</p></div>" );
 		scrollDown();
 	});
 
@@ -339,6 +343,7 @@
 		});
 	};
 
+	// Delete Message if requested by Server
 	socket.on('deleteMessage', function(id) {
 		document.getElementById(id.id).remove();
 	});

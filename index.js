@@ -9,8 +9,13 @@ const adminlist = [];
 
 const database = require('./database.js')
 
+let rooms;
+let whitelist;
+
 database.init(() => {
-	console.log(database.rooms)
+
+	rooms = database.rooms
+	whitelist = database.whitelist
 
 	app.get('/', function(req, res){
 		res.sendFile(__dirname + '/index.html');
@@ -26,6 +31,7 @@ database.init(() => {
 
 	io.on('connection', function(socket){
 
+		// Set initial User Data
 		socket._data = {
 			username: null,
 			status: null,
@@ -43,9 +49,11 @@ database.init(() => {
 				for (i = 0; i < keys.length; i++) {
 					let key = keys[i];
 					let data = io.sockets.connected[key]._data;
-					usernames.push(data.username);
+					if (data.username != null) {
+						usernames.push(data.username.toLowerCase());
+					}
 				}
-				if (!usernames.includes(username)) {
+				if (!usernames.includes(username.toLowerCase())) {
 					socket._data.username = username;
 					socket._data.status = 'online';
 					socket._data.loggedIn = true;
@@ -53,7 +61,6 @@ database.init(() => {
 						socket._data.whitelisted = true;
 					}
 					cb({success: true}); // Hide Login Window and show Chat
-					//io.emit('userConnected', username); // Send to all Clients -> New User connected
 				} else {
 					cb({success: false, error: 'Username is taken!'}); // SweetError if the Username extends 12 Chars
 				}
@@ -62,9 +69,8 @@ database.init(() => {
 			};
 		});
 
+		// Show Users what Rooms exist so he can join them (if he has access)
 		socket.on('listRooms', function(cb) {
-			// copy rooms
-			// Array.map function
 			let roomsTemp;
 			if (socket._data.whitelisted) {
 				roomsTemp = rooms.map(rooms => { return {name: rooms.name, public: rooms.public, access: true} });
@@ -81,6 +87,7 @@ database.init(() => {
 			};
 		});
 
+		// Let the User join Room XYZ if he has access to it
 		socket.on('joinRoom', function(roomName, cb) {
 			if (typeof roomName === 'string' && /^[a-zA-Z0-9]*$/.test(roomName)) {
 				let allowed = false;
@@ -111,6 +118,7 @@ database.init(() => {
 			}
 		});
 
+		// If a User is in a Room, give him all Users in it
 		socket.on('listRoomUsers', function(cb) {
 			if (socket._data.room !== null) {
 				let keys = Object.keys(io.sockets.connected);
@@ -129,6 +137,7 @@ database.init(() => {
 			};
 		});
 
+		// Let the User leave the Room if he wishes tos
 		socket.on('leaveRoom', function(cb) {
 			if (socket._data.room !== null) {
 				io.to(socket._data.room).emit('userLeft', socket._data.username);
@@ -138,18 +147,24 @@ database.init(() => {
 			};
 		});
 
+		// Receive sent message and broadcast them to the people in the Room
 		socket.on('sendMessage', function(message, cb) {
-			if (typeof message === 'string') {
-				if (socket._data.room !== null) {
-					message = {'id': `${socket.id}:${Date.now()}`, 'username': socket._data.username, 'message': message};
-					socket.broadcast.to(socket._data.room).emit('message', message);
-					cb({success: true, message: message});
-				} else {
-					cb({success: false, error: 'Join a Room before sending a message!'})
+			if (socket._data.room !== null) {
+				if (typeof message === 'string') {
+					if (message.length <= 512) {
+							message = {'id': `${socket.id}:${Date.now()}`, 'username': socket._data.username, 'message': message};
+							socket.broadcast.to(socket._data.room).emit('message', message);
+							cb({success: true, message: message});
+					} else {
+						cb({success: false, error: 'Message too long! Max 512 Chars.'})
+					}
 				}
+			} else {
+				cb({success: false, error: 'Join a Room before sending a message!'})
 			}
 		});
 
+		// Delete message for all Users in the Room
 		socket.on('deleteMessage', function(messageId, cb) {
 			if (socket._data.room !== null) {
 				messageId = messageId.split(":");
@@ -164,6 +179,7 @@ database.init(() => {
 			}
 		});
 
+		// Let the User change the Status and broadcast it
 		socket.on('changeStatus', function(status, cb) {
 			if (typeof status === 'string' && /^[a-zA-Z0-9]*$/.test(status)) {
 				if (socket._data.room !== null) {
@@ -175,14 +191,16 @@ database.init(() => {
 			}
 		});
 
+		// If the User disconnects, announce it
 		socket.on('disconnect', function() {
 			if (socket._data.room !== null) {
 				io.to(socket._data.room).emit('userLeft', socket._data.username);
 			};
 		});
 
+		// Check if Admin Password is correct and let him in
 		socket.on('adminLogin', function(pass, cb) {
-			if (typeof pass === 'string' && /^[a-zA-Z0-9]*$/.test(pass) && pass == "1") {
+			if (typeof pass === 'string' && /^[a-zA-Z0-9]*$/.test(pass) && pass == "hoohah") {
 				socket._data.admin = true;
 				cb({success: true});
 			} else {
@@ -190,36 +208,32 @@ database.init(() => {
 			}
 		})
 
+		// Create a Room, save it in JSON and broadcast it to people not in Room
 		socket.on('createRoom', function(data, cb) {
 			if (socket._data.admin && typeof data === 'object') {
 				if (data.name.length >= 4 && data.name.length <= 12) {
 					if (/^[a-zA-Z0-9]*$/.test(data.name)) {
 						if (rooms.indexOf(rooms.find(rooms => rooms.name === data.name)) === -1 ) {
-							fs.writeFile('./data/chatrooms.json', JSON.stringify(rooms.concat(data), null, 2), (err) => {
+							database.createRoom(data, (err) => {
 								if (err) {
-									console.log(err)
 									cb({
 										success: false,
 										error: 'Could not save Room'
 									})
-								} else {
-									rooms.push({
-										name: data.name,
-										public: data.public
-									})
-									cb({
-										success: true,
-										data: data
-									})
-									let keys = Object.keys(io.sockets.connected);
-									for (i = 0; i < keys.length; i++) {
-										let key = keys[i];
-										if (io.sockets.connected[key]._data.room == null) {
-											io.to(`${key}`).emit('createRoom', {data: data, access: io.sockets.connected[key]._data.whitelisted})
-										}
+									return;
+								}
+								cb({
+									success: true,
+									data: data
+								})
+								let keys = Object.keys(io.sockets.connected);
+								for (i = 0; i < keys.length; i++) {
+									let key = keys[i];
+									if (io.sockets.connected[key]._data.room == null) {
+										io.to(`${key}`).emit('createRoom', {data: data, access: io.sockets.connected[key]._data.whitelisted})
 									}
 								}
-							});
+							})
 						} else {
 							cb({
 								success: false,
@@ -241,21 +255,19 @@ database.init(() => {
 			}
 		})
 
+		// Delete a Room, delete it from JSON and broadcast it to people not in Room
 		socket.on('deleteRoom', function(roomName, cb) {
 			if (socket._data.admin && /^[a-zA-Z0-9]*$/.test(roomName) && typeof roomName === 'string') {
 				let arrayIndex = rooms.indexOf(rooms.find(rooms => rooms.name === roomName))
 				if (arrayIndex > -1) {
-					const roomsCopy = rooms.map(room => Object.assign({}, room))
-					roomsCopy.splice(arrayIndex, 1);
-					fs.writeFile('./data/chatrooms.json', JSON.stringify(roomsCopy, null, 2), (err) => {
+					database.deleteRoom(arrayIndex, (err) => {
 						if (err) {
 							console.log(err)
 							cb({
 								success: false,
-								error: 'Could not save Room!'
+								error: 'Could not delete Room!'
 							})
 						} else {
-							rooms.splice(arrayIndex, 1)
 							cb({
 								success: true,
 								room: roomName
@@ -272,7 +284,7 @@ database.init(() => {
 								}
 							}
 						}
-					});
+					})
 				} else {
 					cb({
 						success: false,
@@ -282,12 +294,11 @@ database.init(() => {
 			}
 		})
 
+		// Change Room Status (public,private), save it in JSON and broadcast it to people not in Room
 		socket.on('changeRoomStatus', (data, cb) => {
 			if (socket._data.admin && typeof data === 'object') {
-				let arrayIndex = rooms.indexOf(rooms.find(rooms => rooms.name === data.name))
-				const roomsCopy = rooms.map(room => Object.assign({}, room))
-				roomsCopy[arrayIndex].public = data.public
-				fs.writeFile('./data/chatrooms.json', JSON.stringify(roomsCopy, null, 2), (err) => {
+				data.arrayIndex = rooms.indexOf(rooms.find(rooms => rooms.name === data.name))
+				database.changeRoomStatus(data, (err) => {
 					if (err) {
 						console.log(err)
 						cb({
@@ -295,7 +306,6 @@ database.init(() => {
 							error: 'Could not save Room Status'
 						})
 					} else {
-						rooms[arrayIndex].public = data.public
 						cb({
 							success: true,
 							name: data.name,
@@ -309,54 +319,21 @@ database.init(() => {
 							}
 						}
 					}
-				});
+				})
 			}
 		})
 
+		// Give Whitelist to Admin so he knows who's Whitelisted
 		socket.on('getWhitelist', function(cb) {
 			if (socket._data.admin) {
 				cb(whitelist)
 			}
 		})
 
-		socket.on('removeFromWhitelist', function(name, cb) {
-			if (socket._data.admin && typeof name === 'string') {
-				let arrayIndex = whitelist.indexOf(name)
-				const whitelistCopy = whitelist.slice()
-				whitelistCopy.splice(arrayIndex, 1)
-				fs.writeFile('./data/whitelist.json', JSON.stringify(whitelistCopy, null, 2), (err) => {
-					if (err) {
-						console.log(err)
-						cb({
-							success: false,
-							error: 'Could not remove User from Whitelist'
-						})
-					} else {
-						whitelist.splice(arrayIndex, 1)
-						cb({
-							success: true,
-							name: name
-						})
-						let keys = Object.keys(io.sockets.connected);
-						for (i = 0; i < keys.length; i++) {
-							let key = keys[i];
-							if (io.sockets.connected[key]._data.username == name) {
-								io.sockets.connected[key]._data.whitelisted = false;
-								if (io.sockets.connected[key]._data.room == null) {
-									io.to(`${key}`).emit('changeWhitelistStatus', false)
-								}
-							}
-						}
-					}
-				});
-			}
-		})
-
+		// Add User to Whitelist, save it in JSON and broadcast it them if they're online
 		socket.on('addToWhitelist', function(user, cb) {
 			if (socket._data.admin && typeof user === 'string') {
-				const whitelistCopy = whitelist.slice()
-				whitelistCopy.push(user)
-				fs.writeFile('./data/whitelist.json', JSON.stringify(whitelistCopy, null, 2), (err) => {
+				database.addToWhitelist(user, (err) => {
 					if (err) {
 						console.log(err)
 						cb({
@@ -364,7 +341,6 @@ database.init(() => {
 							error: 'Could not add User to Whitelist'
 						})
 					} else {
-						whitelist.push(user)
 						cb({
 							success: true,
 							name: user
@@ -376,6 +352,36 @@ database.init(() => {
 								io.sockets.connected[key]._data.whitelisted = true;
 								if (io.sockets.connected[key]._data.room == null) {
 									io.to(`${key}`).emit('changeWhitelistStatus', true)
+								}
+							}
+						}
+					}
+				})
+			}
+		})
+
+		// Remove User from Whitelist, remove him from JSON and broadcast it them if they're online
+		socket.on('removeFromWhitelist', function(name, cb) {
+			if (socket._data.admin && typeof name === 'string') {
+				database.removeFromWhitelist(name, (err) => {
+					if (err) {
+						console.log(err)
+						cb({
+							success: false,
+							error: 'Could not remove User from Whitelist'
+						})
+					} else {
+						cb({
+							success: true,
+							name: name
+						})
+						let keys = Object.keys(io.sockets.connected);
+						for (i = 0; i < keys.length; i++) {
+							let key = keys[i];
+							if (io.sockets.connected[key]._data.username == name) {
+								io.sockets.connected[key]._data.whitelisted = false;
+								if (io.sockets.connected[key]._data.room == null) {
+									io.to(`${key}`).emit('changeWhitelistStatus', false)
 								}
 							}
 						}

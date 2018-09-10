@@ -101,6 +101,7 @@
 		input.select();
 	});
 
+	// Create a Room and send to Server
 	function createRoom() {
 		let name = $("#roomName").val();
 		let state = $("input[name='radio']:checked").val();
@@ -137,15 +138,16 @@
 					$("#roomName").val('');
 				} else {
 					swal(
-					'Error!',
-					data.error,
-					'error'
+						'Error!',
+						data.error,
+						'error'
 					)
 				}
 			})
 		}
 	}
 
+	// Login as Admin
 	function login() {
     	socket.emit('adminLogin', $("#passwordInput").val(), (data) => {
 			if (data.success) {
@@ -195,6 +197,7 @@
 		}); // Take Value in Input Field "usernameText" and send to Server
 	};
 
+	// Whitelist a User
 	function whitelistUser() {
 		socket.emit("addToWhitelist", $("#whitelistInput").val(), (data) => {
 			if (data.success) {
@@ -203,6 +206,7 @@
 		})
 	}
 
+	// Change Room Status to private/public
 	function changeRoomStatus(data) {
 		socket.emit('changeRoomStatus', data, (data) => {
 			if (data.success) {
@@ -222,20 +226,32 @@
 		})
 	}
 
+	// Delete a Room
 	function deleteRoom(room) {
 		socket.emit('deleteRoom', room, (data) => {
 			if (data.success) {
 				$("#"+data.room).remove();
+			} else {
+				swal(
+					'Error!',
+					data.error,
+					'error'
+				)
 			}
 		})
 	}
 
+	// Remove User from Whitelist
 	function removeFromWhitelist(name) {
 		socket.emit('removeFromWhitelist', name, (data) => {
 			if (data.success) {
 				$('#WhitelistUser'+data.name).remove();
 			} else {
-
+				swal(
+					'Error!',
+					data.error,
+					'error'
+				)
 			}
 		});
 	}

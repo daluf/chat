@@ -12,12 +12,12 @@
 * description: get all rooms on the server
 * preqrequisites: admin-logged-in socket
 * payload: none
-* response: list of rooms - {name: string, public: false, removeable: boolean}[]
+* response: list of rooms - {name: string, public: false}[]
 ```
 [
-    {name: "Geheimraum", public: false, removeable: true},
-    {name: "Lobby", public: true, removeable: false},
-    {name: "Ausbilderraum", public: false, removeable: true},
+    {name: "Geheimraum", public: false},
+    {name: "Lobby", public: true},
+    {name: "Ausbilderraum", public: false},
     "...."
 ]
 ```

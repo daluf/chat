@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-// whitelist
+// Prepare Whitelist
 function loadWhitelist(callback) {
 	fs.exists('./data/whitelist.json', (exists) => {
 		if (exists) {
@@ -13,7 +13,7 @@ function loadWhitelist(callback) {
 				callback(null)
 			 })
 		} else {
-			const data = '[]'
+			const data = []
 			fs.writeFile('./data/whitelist.json', JSON.stringify(data), (err) => {
 				if (err) {
 					callback(err);
@@ -26,15 +26,7 @@ function loadWhitelist(callback) {
 	})
 }
 
-loadWhitelist((err) => {
-	if (err) {
-		console.log('Error: ', err)
-		console.log('Could not load Whitelist! Exiting...')
-		process.exit(1);
-	}
-})
-
-// chatrooms
+// Prepare Chatrooms
 function loadChatRooms(callback) {
 	fs.exists('./data/chatrooms.json', (exists) => {
 		if (exists) {
@@ -60,6 +52,7 @@ function loadChatRooms(callback) {
 	})
 }
 
+// Create a Room and save it
 function createRoom(data, callback) {
 	module.exports.rooms.push({
 		name: data.name,
@@ -74,6 +67,63 @@ function createRoom(data, callback) {
 	});
 }
 
+// Delete a Room and save it
+function deleteRoom(roomIndex, callback) {
+	module.exports.rooms.splice(roomIndex, 1)
+	saveChatRooms((err) => {
+		if (err) {
+			callback(err);
+			return;
+		}
+		callback(null);
+	});
+}
+
+// Change Room Status and save it
+function changeRoomStatus(data, callback) {
+	module.exports.rooms[data.arrayIndex].public = data.public
+	saveChatRooms((err) => {
+		if (err) {
+			callback(err);
+			return;
+		}
+		callback(null);
+	});
+}
+
+// Add User to Whitelist and save it
+function addToWhitelist(user, callback) {
+	if (!module.exports.whitelist.includes(user)) {
+		module.exports.whitelist.push(user);
+		saveWhitelist((err) => {
+			if (err) {
+				callback(err);
+				return;
+			}
+			callback(null);
+		});
+	} else {
+		callback('User is already whitelisted')
+	}
+}
+
+// Remove User from Whitelist and save it
+function removeFromWhitelist(user, callback) {
+	if (module.exports.whitelist.includes(user)) {
+		module.exports.whitelist.splice(module.exports.whitelist.indexOf(user), 1);
+		saveWhitelist((err) => {
+			if (err) {
+				callback(err);
+				return;
+			}
+			callback(null);
+		});
+	} else {
+		callback('User is not whitelisted')
+	}
+}
+
+// Function to save Chatrooms
 function saveChatRooms(callback) {
 	fs.writeFile('./data/chatrooms.json', JSON.stringify(module.exports.rooms, null, 2), (err) => {
 		if (err) {
@@ -84,6 +134,7 @@ function saveChatRooms(callback) {
 	})
 }
 
+// Function to save Whitelist
 function saveWhitelist(callback) {
 	fs.writeFile('./data/whitelist.json', JSON.stringify(module.exports.whitelist, null, 2), (err) => {
 		if (err) {
@@ -94,8 +145,7 @@ function saveWhitelist(callback) {
 	})
 }
 
-
-
+// Initialize ChatRooms and Whitelist
 function init(callback) {
 	loadChatRooms((err) => {
 		if (err) {
@@ -119,5 +169,13 @@ function init(callback) {
 module.exports = {
 	whitelist: null,
 	rooms: null,
+
+	createRoom: createRoom,
+	deleteRoom: deleteRoom,
+	changeRoomStatus: changeRoomStatus,
+
+	addToWhitelist: addToWhitelist,
+	removeFromWhitelist: removeFromWhitelist,
+
 	init: init,
 };
