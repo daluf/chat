@@ -1,95 +1,236 @@
 <!doctype html>
 <html lang="en">
-<head>
-	<!-- Required meta tags -->
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-	<!-- Bootstrap CSS -->
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<!-- Semantic CSS -->
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-	<link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="semantic.css">
 
-	<title>Hello, chat!</title>
-</head>
-<body>
+	<title>ui-test</title>
 
-	<div class="login-wrapper">
-	<div class="login-card">
-		<div class="login-title">
-		Login into Chat
+	<style>
+		.ui.input > input {
+			width: 60%;
+		}
+
+		.login-main {
+			position: relative;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+		.leave-room {
+			background-color: rgb(192, 32, 32);
+			color: white;
+			text-align: center;
+			padding-top: 10px;
+			padding-left: 0px;
+			padding-right: 16px;
+			padding-bottom: 10px;
+		}
+
+		.leave-room:hover {
+			background-color: rgb(255, 106, 106);
+		}
+		@media only screen and (max-height: 600px) {
+			.login-main {
+				position: relative;
+				top: 2%;
+				transform: translateY(-0%);
+			}
+			#chat-users {
+				display: none;
+			}
+		}
+
+		.room-button.huge {
+			margin-bottom: 1%;
+		}
+
+		.chat-user {
+			text-overflow: ellipsis;
+			width: 100%;
+			overflow: hidden;
+			white-space: nowrap;
+			padding-bottom: 5px;
+			padding-top: 3px;
+		}
+
+		.chat-userlist, .chat-userlist-userlist {
+			border-left: 1px solid black;
+			overflow-y: scroll;
+			height: 400px;
+			max-height: 100%;
+		}
+
+		.chat-userlist-userlist {
+			border-left: none;
+		}
+
+		.chat-item {
+			margin-left: 15px;
+		}
+
+		.chat-input {
+			width: 100%;
+		}
+
+		.chat-messages {
+			scroll-behavior: auto;
+			height: 400px;
+			max-height: 100%;
+			overflow-y: scroll;
+			overflow-x: hidden;
+		}
+
+		.status-dropdown {
+			width: 100%;
+		}
+
+		.deleteButton {
+			background-color: rgb(212, 56, 56);
+			color: #efefef;
+			position:absolute;
+			right:10px;
+			top:10px;
+			border-radius: 7.5px;
+		}
+
+		.online {
+			color: white;
+			background-color: rgb(0, 160, 0);
+			border-radius: 20px;
+			padding-top: 5px;
+			padding-bottom: 5px;
+			margin-bottom: 5px;
+		}
+
+		.away {
+			color: black;
+			background-color: rgb(255, 217, 0);
+			border-radius: 20px;
+			padding-top: 5px;
+			padding-bottom: 5px;
+			margin-bottom: 5px;
+		}
+
+		.busy {
+			color: white;
+			background-color: rgb(177, 0, 0);
+			border-radius: 20px;
+			padding-top: 5px;
+			margin-bottom: 5px;
+			padding-bottom: 5px;
+		}
+	</style>
+
+  </head>
+  <body>
+
+	<!-- Main Login Window -->
+	<div id="login-ui" class="login-main ui raised very padded text container segment center aligned">
+
+		<h2 class="ui header">Login into Chat</h2>
+
+		<div class="ui action input center aligned">
+			<input type="text" id="usernameText" placeholder="Username...">
+			<button class="ui button blue" onclick="login();">Login</button>
 		</div>
 
-		<div>
-		<input id="usernameText" class="username-field" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-		</div>
-
-		<div>
-		<button onclick="login();" type="button" class="btn btn-primary login-button">Login</button>
-		</div>
 	</div>
+
+	<div id="rooms-ui" class="login-main ui raised very padded text container segment center aligned">
+
+		<h2 class="ui header">Select a Room</h2>
+
+
 	</div>
 
-	<div class="row col-12" id="roomies">
-		<div class="col-12 text-center" style="padding-top: 30px; padding-bottom: 30px; font-size: 30px;">Chat Room List</div>
-	</div>
+	<div id="chat-ui" class="login-main ui raised very padded text container segment center aligned">
 
-	<div class="container chat-ui">
+		<h2 id="room-name" class="ui header">**** Room-Name ****</h2>
 
-	<div class="row chat-mobile">
-		<div class="col-10 chat-messages" id="chat-messages">
+		<div class="ui grid">
 
-		</div>
-		<div class="col-2">
-			<div class="col-12 chat-leave">
-					<button class="col-12 btn btn-danger" onclick="leaveRoom();" type="button">
-							Leave
-					</button>
+				<div class="row">
+
+						<div id="chat-messages" class="chat-messages left aligned twelve wide column">
+
+
+						</div>
+
+						<div id="chat-users" class="four wide column">
+
+							<div id="userlist" class="chat-userlist ui middle aligned divided list">
+
+							</div>
+
+						</div>
 				</div>
-			<div class="chat-users">
 
-			</div>
+				<div class="row">
+					<div class="ten wide column">
+						<div class="chat-input ui action input center aligned">
+							<input type="text" id="message-input" placeholder="Message...">
+							<button class="ui button" onclick="sendTextMessage();">Send</button>
+						</div>
+					</div>
+					<div class="status-dropdown six wide column">
+							<div class="ui compact menu">
+								<div class="ui upward dropdown item">
+									Settings
+									<i class="dropdown icon"></i>
+									<div class="menu">
+										<div class="item" onclick="showOnlineList(true);">Userlist</div>
+										<div class="item" onclick="changeStatus('online');">Online</div>
+										<div class="item" onclick="changeStatus('away');">Away</div>
+										<div class="item" onclick="changeStatus('busy');">Busy</div>
+										<div class="leave-room" onclick="leaveRoom();">Leave</div>
+									</div>
+								</div>
+							</div>
+						</div>
+				</div>
+
 		</div>
 
 	</div>
 
-	<div class="row chat-border">
+	<div id="userlist-ui" class="login-main ui raised very padded text container segment center aligned">
 
-		<div class="col-10 chat-input">
+		<h2 class="ui header">Userlist</h2>
 
-		<div class="input-group mb-3">
-			<input id="message-input" type="text" class="form-control" placeholder="Message" aria-label="Message" aria-describedby="button-addon2">
-			<div class="input-group-append">
-			<button onclick="sendTextMessage();" class="btn btn-outline-secondary" type="button" id="button-addon2">Send</button>
+		<div class="row">
+
+			<div id="chat-users-userlist" class="sixteen wide column">
+
+				<div id="userlist-userlist" class="chat-userlist-userlist ui middle aligned divided list">
+
+				</div>
+
 			</div>
-		</div>
 
 		</div>
 
-		<div class="col-2 chat-input">
-			<div class="dropdown">
-			<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Status
+		<div class="row">
+			<button onclick="showOnlineList(false);" class="huge ui button blue">
+				Back
 			</button>
-			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-				<a id="statusOnline" class="dropdown-item active" onclick="changeStatus('online')" href="#">Online</a>
-				<a id="statusAway" class="dropdown-item" onclick="changeStatus('away')" href="#">Away</a>
-				<a id="statusBusy" class="dropdown-item" onclick="changeStatus('busy')" href="#">Busy</a>
-			</div>
-			</div>
 		</div>
 
 	</div>
 
-	</div>
 
-	<!-- Optional JavaScript -->
-	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Semantic JS -->
+
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.13/dist/sweetalert2.all.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 	<script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+	<script src="semantic.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
 	const socket = io();
@@ -124,17 +265,22 @@
 				)
 			}
 		})
-		$("#statusOnline").removeClass('active')
-		$("#statusAway").removeClass('active')
-		$("#statusBusy").removeClass('active')
-		if (status == 'online') {
-		$("#statusOnline").addClass('active')
-		}
-		if (status == 'away') {
-		$("#statusAway").addClass('active')
-		}
-		if (status == 'busy') {
-		$("#statusBusy").addClass('active')
+	}
+
+	function showOnlineList(state) {
+		if (state) {
+			$("#chat-ui").hide();
+			$("#userlist-ui").show();
+			socket.emit('listRoomUsers', (roomUsers) => {
+				for (i = 0; i < roomUsers.length; i++) {
+					$( "#userlist-userlist" ).append( `<div id="Userlist${roomUsers[i].username}" class="chat-item item"><div class="chat-user content">${escapeHtml(roomUsers[i].username)}</div></div>`)
+					$("#Userlist"+roomUsers[i].username).addClass(roomUsers[i].status);
+				}
+			});
+		} else {
+			$('#userlist-userlist').empty();
+			$("#chat-ui").show();
+			$("#userlist-ui").hide();
 		}
 	}
 
@@ -142,9 +288,9 @@
 	function leaveRoom() {
 		socket.emit('leaveRoom', (success) => {
 			if (success) {
-				$('.chat-ui').hide();
-				$('#roomies').show();
-				$('.chat-users').empty();
+				$('#chat-ui').hide();
+				$('#rooms-ui').show();
+				$('#userlist').empty();
 				$('.chat-messages').empty();
 			} else {
 				swal(
@@ -172,26 +318,20 @@
 		document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight
 	}
 
-	// Hiding Chat-UI if user isnt logged in
-	$( document ).ready(function() {
-		$(".chat-ui").hide();
-		$("#roomies").hide();
-	});
-
 	// Submit Login
 	function login() {
 		socket.emit('login', $("#usernameText").val(), (data) => {
 			if (data.success) {
-				$(".login-wrapper").hide();
+				$("#login-ui").hide();
 				socket.emit('listRooms', (rooms) => {
-					$("#roomies").show();
+					$("#rooms-ui").show();
 					for (i = 0; i < rooms.length; i++) {
 						if (rooms[i].public === true) {
-							$.tmpl("<button id="+rooms[i].name+" onclick=joinRoom('"+rooms[i].name+"') class='col-3 room'><i id="+rooms[i].name+"Icon class='"+rooms[i].name+" fas locked fas fa-lock' style='display: none;'></i> "+rooms[i].name+"</button>").appendTo( "#roomies" );
+							$.tmpl(`<button id="${rooms[i].name}" onclick="joinRoom('${rooms[i].name}')" class="room-button huge ui button center aligned"><i id="${rooms[i].name}Icon" class='${rooms[i].name} fas locked fas fa-lock' style='display: none;'></i> ${rooms[i].name}</button>`).appendTo( "#rooms-ui" );
 						} else if (rooms[i].access === true)  {
-							$.tmpl("<button id="+rooms[i].name+" onclick=joinRoom('"+rooms[i].name+"') class='col-3 room'><i id="+rooms[i].name+"Icon class='"+rooms[i].name+" unlocked fas fa-lock-open'></i> "+rooms[i].name+"</button>").appendTo( "#roomies" );
+							$.tmpl(`<button id="${rooms[i].name}" onclick="joinRoom('${rooms[i].name}')" class="room-button huge ui button center aligned"><i id="${rooms[i].name}Icon" class='${rooms[i].name} unlocked fas fa-lock-open'></i> ${rooms[i].name}</button>`).appendTo( "#rooms-ui" );
 						} else {
-							$.tmpl("<button id="+rooms[i].name+" onclick=joinRoom('"+rooms[i].name+"') class='col-3 room'><i id="+rooms[i].name+"Icon class='"+rooms[i].name+" locked fas fa-lock'></i> "+rooms[i].name+"</button>").appendTo( "#roomies" );
+							$.tmpl(`<button id="${rooms[i].name}" onclick="joinRoom('${rooms[i].name}')" class="room-button huge ui button center aligned"><i id="${rooms[i].name}Icon" class='${rooms[i].name} locked fas fa-lock'></i> ${rooms[i].name}</button>`).appendTo( "#rooms-ui" );
 						}
 					}
 				})
@@ -208,11 +348,11 @@
 	// Display Room if Admin creates one
 	socket.on('createRoom', (data) => {
 		if (data.data.public === true) {
-			$.tmpl("<button id="+data.data.name+" onclick=joinRoom('"+data.data.name+"') class='col-3 room'><i id="+data.data.name+"Icon class='"+data.data.name+" fas locked fas fa-lock' style='display: none;'></i> "+data.data.name+"</button>").appendTo( "#roomies" );
+			$.tmpl(`<button id="${data.data.name}" onclick="joinRoom('${data.data.name}')" class="room-button huge ui button center aligned"><i id="${data.data.name}Icon" class='${data.data.name} fas locked fas fa-lock' style='display: none;'></i> ${data.data.name}</button>`).appendTo( "#rooms-ui" );
 		} else if (data.data.access === true)  {
-			$.tmpl("<button id="+data.data.name+" onclick=joinRoom('"+data.data.name+"') class='col-3 room'><i id="+data.data.name+"Icon class='"+data.data.name+" unlocked fas fa-lock-open'></i> "+data.data.name+"</button>").appendTo( "#roomies" );
+			$.tmpl(`<button id="${data.data.name}" onclick="joinRoom('${data.data.name}')" class="room-button huge ui button center aligned"><i id="${data.data.name}Icon" class='${data.data.name} unlocked fas fa-lock-open'></i> ${data.data.name}</button>`).appendTo( "#rooms-ui" );
 		} else {
-			$.tmpl("<button id="+data.data.name+" onclick=joinRoom('"+data.data.name+"') class='col-3 room'><i id="+data.data.name+"Icon class='"+data.data.name+" locked fas fa-lock'></i> "+data.data.name+"</button>").appendTo( "#roomies" );
+			$.tmpl(`<button id="${data.data.name}" onclick="joinRoom('${data.data.name}')" class="room-button huge ui button center aligned"><i id="${data.data.name}Icon" class='${data.data.name} locked fas fa-lock'></i> ${data.data.name}</button>`).appendTo( "#rooms-ui" );
 		}
 	})
 
@@ -220,9 +360,9 @@
 	socket.on('deleteRoom', (data) => {
 		$('#'+data.room).remove();
 		if (data.inroom) {
-			$('.chat-ui').hide();
-			$('#roomies').show();
-			$('.chat-users').empty();
+			$('#chat-ui').hide();
+			$('#rooms-ui').show();
+			$('#userlist').empty();
 			swal(
 				'Error!',
 				'Your Room has been deleted!',
@@ -271,11 +411,12 @@
 	function joinRoom(name) {
 		socket.emit('joinRoom', name, (data) => {
 			if (data.success) {
-				$('#roomies').hide();
-				$('.chat-ui').show();
+				$('#room-name').text('Room: ' + name)
+				$('#rooms-ui').hide();
+				$('#chat-ui').show();
 				socket.emit('listRoomUsers', (roomUsers) => {
 					for (i = 0; i < roomUsers.length; i++) {
-						$( ".chat-users" ).append( "<div id="+roomUsers[i].username+"> "+escapeHtml(roomUsers[i].username)+" </div>" );
+						$( "#userlist" ).append( `<div id="${roomUsers[i].username}" class="chat-item item"><div class="chat-user content">${escapeHtml(roomUsers[i].username)}</div></div>`)
 						$("#"+roomUsers[i].username).addClass(roomUsers[i].status);
 					}
 				});
@@ -293,7 +434,7 @@
 	socket.on('userJoined', (data) => {
 		username = data.username
 		status = data.status
-		$( ".chat-users" ).append( "<div id="+username+"> "+escapeHtml(username)+" </div>" );
+		$( "#userlist" ).append( `<div id="${username}" class="chat-item item"><div class="chat-user content">${escapeHtml(username)}</div></div>`)
 		$("#"+username).addClass(status);
 	})
 
@@ -307,7 +448,8 @@
 		if ($("#message-input").val()) {
 			socket.emit('sendMessage', $("#message-input").val(), (data) => {
 				if (data.success) {
-					$( ".chat-messages" ).append( "<div class='row' id="+data.message.id+"> <div class='col-10'> <b> "+escapeHtml(data.message.username)+"</b>:<br><p class='message'>"+escapeHtml(data.message.message)+"</p> </div> <div class='col-1'> <button type='button' onclick=removeMessage('"+data.message.id+"'); class='btn btn-danger removalButton'>X</button></div>" );
+					// <div class="ui small message"><b>Name:</b><br>This is a small message. <button class="deleteButton">X</button></div>
+					$( "#chat-messages" ).append( `<div class="ui small message" id="${data.message.id}"><b>${escapeHtml(data.message.username)}:</b><br>${escapeHtml(data.message.message)} <button class="deleteButton" onclick="removeMessage('${data.message.id}')">X</button></div>`)
 					scrollDown();
 					$("#message-input").val('');
 				} else {
@@ -323,8 +465,7 @@
 
 	// Receive and show new Message
 	socket.on('message', function(message) {
-		console.log(message)
-		$( ".chat-messages" ).append( "<div id='"+message.id+"'> <b>"+escapeHtml(message.username)+"</b>:<br><p class='message'>"+escapeHtml(message.message)+"</p></div>" );
+		$( "#chat-messages" ).append( `<div class="ui small message" id="${message.id}"><b>${escapeHtml(message.username)}:</b><br>${escapeHtml(message.message)}</div>`)
 		scrollDown();
 	});
 
@@ -368,11 +509,38 @@
 		}
 	});
 
-	// Remove requested Message
-	socket.on('removeMessage', function(id) {
-		$( "#"+id ).remove();
-	})
+	$( document ).ready(function() {
+		$('#rooms-ui').hide();
+		$('#chat-ui').hide();
+		$('#userlist-ui').hide();
+		checkWindowSize();
+	});
 
+	window.onresize = function(){
+		checkWindowSize();
+	}
+
+	function checkWindowSize() {
+		if ($(window).width() <= 900) {
+			$("#chat-messages").removeClass('twelve wide column').addClass('sixteen wide column')
+			$(".chat-userlist").css('display', 'none')
+			if (window.matchMedia("(orientation: landscape)").matches) {
+				$(".chat-messages").css('height', '150px')
+			} else {
+				$(".chat-messages").css('height', '350px')
+			}
+		} else {
+			$("#chat-messages").removeClass('sixteen wide column').addClass('twelve wide column')
+			$(".chat-messages").css('height', '400px')
+			$(".chat-userlist").css('display', 'block')
+		}
+	}
+
+	$('.upward.dropdown')
+		.dropdown({
+			direction: 'upward'
+	});
 	</script>
-</body>
+
+  	</body>
 </html>
