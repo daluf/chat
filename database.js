@@ -145,26 +145,63 @@ function saveWhitelist(callback) {
 	})
 }
 
+function ensureDataFolderExists(path, callback) {
+	fs.stat(path, (err, stats) => {
+		if (err) {
+			if (err.code === "ENOENT") {
+				console.log('data folder not existing - - - creating one ');
+				fs.mkdir(path, (err) => {
+					if (err) {
+						callback(err);
+						return;
+					}
+
+					callback(null);
+					return;
+				});
+			} else {
+				callback(err);
+			}
+			return;
+		}
+
+		if (!stats.isDirectory()) {
+			callback(new Error("data folder is a file!"));
+			return;
+		}
+
+		callback(null)
+	});
+}
+
 // Initialize ChatRooms and Whitelist
 function init(callback) {
-	loadChatRooms((err) => {
+	ensureDataFolderExists("./data", (err) => {
 		if (err) {
 			console.log('Error: ', err)
-			console.log('Could not load ChatRooms! Exiting...')
+			console.log('Could not ensure that data folder exists! Exiting...')
 			process.exit(1);
 		}
 
-		loadWhitelist((err) => {
+		loadChatRooms((err) => {
 			if (err) {
 				console.log('Error: ', err)
-				console.log('Could not load Whitelist! Exiting...')
+				console.log('Could not load ChatRooms! Exiting...')
 				process.exit(1);
 			}
 
-			callback();
+			loadWhitelist((err) => {
+				if (err) {
+					console.log('Error: ', err)
+					console.log('Could not load Whitelist! Exiting...')
+					process.exit(1);
+				}
+
+				callback();
+			});
 		});
 	});
-}
+};
 
 module.exports = {
 	whitelist: null,
